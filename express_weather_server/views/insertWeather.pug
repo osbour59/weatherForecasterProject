@@ -1,4 +1,31 @@
 extends layout
 block content
     body
-        h2 Add a New Location
+     h2 Add a New Location
+        form(method="POST")
+            p
+                | Location (Region name or ZIP Code):
+                input(type="name" value="search")
+                | Favorite?
+                input(type="checkbox" value="favorite")
+            p   
+                input(type="submit" value="Submit")
+            if location
+                h3 Location Selected: #{location}
+                    each result in results
+                        - const current = result.current
+                        h3 Current Conditions:
+                        p Current Time: #{current.observationtime}
+                        p Temperature: #{current.temperature}°F
+                        p Feels Like: #{current.feelslike}°F
+                        p Skytext: #{current.skytext}
+                        p Humidity: #{current.humidity}%
+                        p Wind Speed: #{current.windspeed}
+                form(method="POST")
+                    p Do you want to add this location to your account?
+                    if favorite
+                        p This will be added to your favorites.
+                    input(type="submit" value="Yes")
+                    input(type="button" value="No" onClick="window.location.href=window.location.href")
+            else
+                p Location not found.
