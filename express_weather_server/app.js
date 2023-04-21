@@ -1,6 +1,10 @@
 /* File: app.js */
 
-var tracker = require("tracker");
+// Weather-js Node Module
+let weather = require('weather-js');
+
+let http = require('http');
+let qString = require('querystring');
 let dbManager = require('./dbManager');
 let express = require("express");
 let app = express();
@@ -29,7 +33,9 @@ app.use(session({
 	saveUninitialized: false,
 	resave: false
 }));
-//get routes
+
+
+// GET routes
 app.get('/', function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
@@ -57,7 +63,13 @@ app.get('/insert', function (req, res){
 	}
 });
 
-//middleware functions
+// GET Request for insertWeather done by Kyle Osbourne
+app.get('/insertWeather', function(req, res) {
+	res.render('insertWeather');
+  });
+
+
+// Middleware Functions
 app.get('/', function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
@@ -90,7 +102,8 @@ app.get('/insert', function (req, res){
     	res.render('insert', {trusted: req.session.user});
 	}
 });
-//post routes
+
+// POST routes
 app.post('/login', express.urlencoded({extended:false}), async (req, res, next)=>{
 	let untrusted= {user: req.body.userName, password: genHash(req.body.pass)};
 	console.log(untrusted.password)
@@ -108,8 +121,22 @@ app.post('/login', express.urlencoded({extended:false}), async (req, res, next)=
 	}
 })
 
-// Weather-js Node Module
-let weather = require('weather-js');
+// POST Request for insertWeather done by Kyle Osbourne
+app.post('/insertWeather', async (req, res) => {
+    let location = req.body.location;
+    let favorite = req.body.favorite;
+  
+    try {
+    // NOTE: The API service is prone to timing out.  Implemented a timeout of 15 seconds.
+      let result = await weather.find({ search: location, degreeType: 'F', timeout: 15000 });
+      res.render('insertWeather', {
+        location: location,
+        favorite: favorite,
+        results: result,
+      });
+    } catch (err) {
+      console.log(err);
+      res.render('insertWeather', { locationNotFound: true });
+    }
+  });
 
-let http = require('http');
-let qString = require('querystring');
