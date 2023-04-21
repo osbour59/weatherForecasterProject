@@ -26,8 +26,7 @@ function docifyUser(params){
     let doc = new userCol({_id: params.name, email: params.email, password: params.password });
     return doc;
 }
-app.set('views', './views');
-app.set('view engine', 'pug');
+
 app.use('/users', userRouter);
 app.use(session({
 	saveUninitialized: false,
