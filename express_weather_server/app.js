@@ -5,27 +5,17 @@ let weather = require('weather-js');
 
 let http = require('http');
 let qString = require('querystring');
+
 let dbManager = require('./dbManager');
 let express = require("express");
 let app = express();
+const bodyParser = require('body-parser');
 var ObjectID = require('mongodb').ObjectId;
+
 var userRouter = require('./routes/userRoutes.js')
 app.set('views', '/views');
 app.set('view engine', 'pug');
-
-function genHash(input){
-    return Buffer.from(crypto.createHash('sha256').update(input).digest('base32')).toString('hex').toUpperCase();
-}
-//mongoose return
-function docifyActivity(params){
-    let doc = new actCol({ activity: { type : params.activity.toString().toLowerCase() }, weight: params.weight,
-		distance: params.distance, time: params.time, user: params.user});
-    return doc;
-}
-function docifyUser(params){
-    let doc = new userCol({_id: params.name, email: params.email, password: params.password });
-    return doc;
-}
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/users', userRouter);
 app.use(session({
@@ -138,4 +128,16 @@ app.post('/insertWeather', async (req, res) => {
       res.render('insertWeather', { locationNotFound: true });
     }
   });
+
+  //Express listen function is literally the HTTP server listen method
+//so we can do the exact same things with it as before
+app.listen(6900, async ()=> {
+    //start and wait for the DB connection
+    try{
+        await dbManager.get("weatherDB");
+    } catch (e){
+        console.log(e.message);
+    }
+    console.log("Server running on Port 6900");
+});
 
