@@ -1,5 +1,5 @@
 let mongoose = require('mongoose');
-
+var crypto = require('crypto');
 
 const userSchema = new mongoose.Schema({
     _id: {
@@ -15,6 +15,11 @@ const userSchema = new mongoose.Schema({
 	email_verified:{
 		type: Boolean,
 		default: false
+	},
+    password:{
+		type: String,
+		required: [true, 'You must enter a password.']
+        // Hash Password
 	}
 });
 
