@@ -9,13 +9,16 @@ let qString = require('querystring');
 let dbManager = require('./dbManager');
 let express = require("express");
 let app = express();
+const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-var ObjectID = require('mongodb').ObjectId;
+const ObjectId = require('mongodb').ObjectId
 
 var userRouter = require('./routes/userRoutes.js')
 app.set('views', '/views');
 app.set('view engine', 'pug');
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+
 
 function genHash(input){
     return Buffer.from(crypto.createHash('sha256').update(input).digest('base32')).toString('hex').toUpperCase();
@@ -23,7 +26,7 @@ function genHash(input){
 
 
 // GET routes
-app.get('/', function (req, res){
+/* app.get('/', function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
     }
@@ -32,7 +35,7 @@ app.get('/', function (req, res){
     	res.render('index', {trusted: req.session.user});
 	}
 
-});
+}); */
 app.get('/login', function(req, res, next){
     if (req.session.user){
         res.redirect('/');
@@ -136,7 +139,7 @@ app.post('/insertWeather', async (req, res) => {
   //Express listen function is literally the HTTP server listen method
 //so we can do the exact same things with it as before
 app.listen(6900, async ()=> {
-    //start and wait for the DB connection
+    // Start and await database connection to weatherDB
     try{
         await dbManager.get("weatherDB");
     } catch (e){

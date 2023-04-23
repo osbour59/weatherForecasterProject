@@ -20,11 +20,11 @@ modify this file to hardcode the DB name if you prefer.
 
 */
 const MongoClient = require('mongodb').MongoClient;
-var getID = require('mongodb').ObjectID();
+var getID = require('mongodb').ObjectID;
 var url = "mongodb://127.0.0.1:27017/";
 let database = {};
 //https://stackoverflow.com/questions/61277898/useunifiedtopology-true-pass-deprecated
-let mongoClient = MongoClient(url,{ useUnifiedTopology: true });
+let mongoClient = new MongoClient(url,{ useUnifiedTopology: true });
 let myDB; //let provides closure, so only one local copy of our db. Th
 //functionally makes this static (one copy for all instances)
 
