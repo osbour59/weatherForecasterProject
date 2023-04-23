@@ -8,6 +8,7 @@ let qString = require('querystring');
 
 let dbManager = require('./dbManager');
 let express = require("express");
+let session = require('express-session');
 let app = express();
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
