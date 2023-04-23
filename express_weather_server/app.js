@@ -17,11 +17,9 @@ app.set('views', '/views');
 app.set('view engine', 'pug');
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use('/users', userRouter);
-app.use(session({
-	saveUninitialized: false,
-	resave: false
-}));
+function genHash(input){
+    return Buffer.from(crypto.createHash('sha256').update(input).digest('base32')).toString('hex').toUpperCase();
+}
 
 
 // GET routes
@@ -128,6 +126,12 @@ app.post('/insertWeather', async (req, res) => {
       res.render('insertWeather', { locationNotFound: true });
     }
   });
+
+  app.use('/users', userRouter);
+  app.use(session({
+      saveUninitialized: false,
+      resave: false
+  }));
 
   //Express listen function is literally the HTTP server listen method
 //so we can do the exact same things with it as before
