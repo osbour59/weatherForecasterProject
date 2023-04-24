@@ -1,6 +1,6 @@
 let mongoose = require('mongoose');
-var crypto = require('crypto');
-
+// userSchema.js
+// Kyle Osbourne
 const userSchema = new mongoose.Schema({
     _id: {
 		type: String,
@@ -19,7 +19,6 @@ const userSchema = new mongoose.Schema({
     password:{
 		type: String,
 		required: [true, 'You must enter a password.']
-        // Hash Password
 	}
 });
 

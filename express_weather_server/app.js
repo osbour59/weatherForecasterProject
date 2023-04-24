@@ -8,26 +8,30 @@ let qString = require('querystring');
 
 let dbManager = require('./dbManager');
 let express = require("express");
-let session = require('express-session');
 let app = express();
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const ObjectId = require('mongodb').ObjectId
 
 var userRouter = require('./routes/userRoutes.js')
-app.set('views', '/views');
+let mongoose = require('mongoose');
+app.set('views', './views');
 app.set('view engine', 'pug');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 
+
+// Login Information
+let session = require('express-session');
+let crypto = require('crypto');
+const userCol = ('./models/userSchema');
 function genHash(input){
     return Buffer.from(crypto.createHash('sha256').update(input).digest('base32')).toString('hex').toUpperCase();
 }
 
-
 // GET routes
-/* app.get('/', function (req, res){
+app.get('/', function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
     }
@@ -36,7 +40,7 @@ function genHash(input){
     	res.render('index', {trusted: req.session.user});
 	}
 
-}); */
+});
 app.get('/login', function(req, res, next){
     if (req.session.user){
         res.redirect('/');
@@ -84,13 +88,13 @@ app.get('/login', function(req, res, next){
         res.render('login');
     }
 });
-app.get('/insert', function (req, res){
+app.get('/insertWeather', function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
     }
     else{
 
-    	res.render('insert', {trusted: req.session.user});
+    	res.render('insertWeather', {trusted: req.session.user});
 	}
 });
 
@@ -133,19 +137,19 @@ app.post('/insertWeather', async (req, res) => {
 
   app.use('/users', userRouter);
   app.use(session({
-      saveUninitialized: false,
-      resave: false
-  }));
-
-  //Express listen function is literally the HTTP server listen method
-//so we can do the exact same things with it as before
+    secret: "terceS",
+    saveUninitialized: false,
+    resave: false
+}));
+ 
 app.listen(6900, async ()=> {
-    // Start and await database connection to weatherDB
     try{
-        await dbManager.get("weatherDB");
+		await mongoose.connect('mongodb://localhost:27017/practiceDB', {useNewUrlParser: true, useUnifiedTopology: true })
+
     } catch (e){
         console.log(e.message);
     }
-    console.log("Server running on Port 6900");
+
+    console.log("Server running on port 6900");
 });
 
