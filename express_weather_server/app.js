@@ -9,7 +9,7 @@ let qString = require('querystring');
 let dbManager = require('./dbManager');
 let express = require("express");
 let app = express();
-const cookieParser = require('cookie-parser');
+// const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const ObjectId = require('mongodb').ObjectId
 
@@ -17,18 +17,25 @@ var userRouter = require('./routes/userRoutes.js')
 let mongoose = require('mongoose');
 app.set('views', './views');
 app.set('view engine', 'pug');
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
+// app.use(cookieParser());
 
 
 
 // Login Information
 let session = require('express-session');
 let crypto = require('crypto');
-const userCol = ('./models/userSchema');
+const userCol = require('./models/userSchema');
 function genHash(input){
     return Buffer.from(crypto.createHash('sha256').update(input).digest('base32')).toString('hex').toUpperCase();
 }
+
+app.use('/users', userRouter);
+  app.use(session({
+    secret: "terceS",
+    saveUninitialized: false,
+    resave: false
+}));
 
 // GET routes
 app.get('/', function (req, res){
@@ -48,13 +55,13 @@ app.get('/login', function(req, res, next){
         res.render('login');
     }
 });
-app.get('/insert', function (req, res){
+app.get('/insertWeather', function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
     }
     else{
 
-    	res.render('insert', {trusted: req.session.user});
+    	res.render('insertWeather', {trusted: req.session.user});
 	}
 });
 
@@ -63,9 +70,39 @@ app.get('/insertWeather', function(req, res) {
 	res.render('insertWeather');
   });
 
+  app.get('/savedLocations', function (req, res){
+	if (!req.session.user){
+        res.redirect('/login');
+    }
+    else{
+
+    	res.render('savedLocations', {trusted: req.session.user});
+	}
+});
+
+app.get('/settings', function (req, res){
+	if (!req.session.user){
+        res.redirect('/login');
+    }
+    else{
+
+    	res.render('settings', {trusted: req.session.user});
+	}
+});
+
+app.get('/planner', function (req, res){
+	if (!req.session.user){
+        res.redirect('/login');
+    }
+    else{
+
+    	res.render('planner', {trusted: req.session.user});
+	}
+});
+
 
 // Middleware Functions
-app.get('/', function (req, res){
+/* app.get('/', function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
     }
@@ -74,14 +111,14 @@ app.get('/', function (req, res){
     	res.render('index', {trusted: req.session.user});
 	}
 
-});
+});*/
 app.use(function(req, res, next){
     let now = new Date().toLocaleTimeString("en-US", {timeZone: "America/New_York"});
     console.log(`${req.method} Request to ${req.path} Route Received: ${now}`);
     next();
 });
 
-app.get('/login', function(req, res, next){
+/*app.get('/login', function(req, res, next){
     if (req.session.user){
         res.redirect('/');
     }else{
@@ -96,7 +133,9 @@ app.get('/insertWeather', function (req, res){
 
     	res.render('insertWeather', {trusted: req.session.user});
 	}
-});
+}); */
+
+
 
 // POST routes
 app.post('/login', express.urlencoded({extended:false}), async (req, res, next)=>{
@@ -135,12 +174,11 @@ app.post('/insertWeather', async (req, res) => {
     }
   });
 
-  app.use('/users', userRouter);
-  app.use(session({
-    secret: "terceS",
-    saveUninitialized: false,
-    resave: false
-}));
+/*app.post('/addLocation', async (req, res) => {
+
+}); */
+
+
  
 app.listen(6900, async ()=> {
     try{
