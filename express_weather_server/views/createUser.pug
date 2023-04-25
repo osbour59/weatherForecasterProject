@@ -1,5 +1,28 @@
 extends layout
 block content
-body
+   body
      h2 Sign Up
         form(method="POST")
+         | Username: 
+         |
+         input(name="userName")
+         br
+         | Display Name: 
+         |
+         input(name="displayName")
+         br
+         | Email: 
+         |
+         input(name="email")
+         br
+         | Password: 
+         |
+         input(name="password")
+         br
+         | Age: 
+         |
+         input(name="age")
+         br
+         br
+         input(type = "submit" value="Sign Up")
+         //Brian Young

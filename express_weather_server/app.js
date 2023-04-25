@@ -70,6 +70,14 @@ app.get('/insertWeather', function (req, res){
     	res.render('insertWeather', {trusted: req.session.user});
 	}
 });
+app.get('/createUser', function(req, res){
+    if(!req.session.user){
+        res.render('createUser', {trusted: req.session.user});
+    }
+    else{
+        res.redirect('/');
+    }
+});
 
 // GET Request for insertWeather done by Kyle Osbourne
 app.get('/insertWeather', function(req, res) {
