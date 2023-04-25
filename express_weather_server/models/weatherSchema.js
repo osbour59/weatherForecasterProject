@@ -4,6 +4,7 @@ Kyle Osbourne */
 let mongoose = require('mongoose');
 
 const weatherSchema = new mongoose.Schema( {
+  _id: String,
     location: {
       name: String,
       latitude: Number,
@@ -34,8 +35,7 @@ const weatherSchema = new mongoose.Schema( {
         precipitation: Number
       }
     ]
-  }
-  );
+  });
 
 const weatherCol=mongoose.model('Weather', weatherSchema)
 module.exports = weatherCol;

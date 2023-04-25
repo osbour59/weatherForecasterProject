@@ -61,6 +61,7 @@ app.get('/createUser', function(req, res){
     res.render('createUser');
 });
 
+// Render the insert Weather Page, redirect to login if the user is not logged in
 app.get('/insertWeather', function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
@@ -70,6 +71,8 @@ app.get('/insertWeather', function (req, res){
     	res.render('insertWeather', {trusted: req.session.user});
 	}
 });
+
+// Render the Sign-up Page
 app.get('/createUser', function(req, res){
     if(!req.session.user){
         res.render('createUser', {trusted: req.session.user});
@@ -173,9 +176,10 @@ app.post('/login', express.urlencoded({extended:false}), async (req, res, next)=
 app.post('/insertWeather', async (req, res) => {
     let location = req.body.location;
     let favorite = req.body.favorite;
-  
+  /* This section displays the current weather for a user if a location is found
+if none is found,  a message stating that the location was not found will be displayed. */
     try {
-    // NOTE: The API service is prone to timing out.  Implemented a timeout of 15 seconds.
+    // NOTE: The API service was prone to timing out at random times.  Implemented a timeout of 15 seconds just in case it does.
       let result = await weather.find({ search: location, degreeType: 'F', timeout: 15000 });
       res.render('insertWeather', {
         location: location,
@@ -184,7 +188,9 @@ app.post('/insertWeather', async (req, res) => {
       });
     } catch (err) {
       console.log(err);
-      res.render('insertWeather', { locationNotFound: true });
+      res.render('insertWeather', { 
+        locationNotFound: true
+     });
     }
   });
 
@@ -193,7 +199,7 @@ app.post('/insertWeather', async (req, res) => {
 }); */
 
 
- 
+ /* Starts the ExpressJS server on Port 6900 */
 app.listen(6900, async ()=> {
     try{
 		await mongoose.connect('mongodb://localhost:27017/practiceDB', {useNewUrlParser: true, useUnifiedTopology: true })
