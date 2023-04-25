@@ -1,4 +1,5 @@
-/* File: app.js */
+/* File: app.js 
+Kyle Osbourne & Anthony Adass */
 
 // Weather-js Node Module
 let weather = require('weather-js');
