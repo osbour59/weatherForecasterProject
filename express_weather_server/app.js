@@ -56,6 +56,11 @@ app.get('/login', function(req, res, next){
         res.render('login');
     }
 });
+
+app.get('/createUser', function(req, res){
+    res.render('createUser');
+});
+
 app.get('/insertWeather', function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
