@@ -4,19 +4,13 @@ let mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
     _id: {
 		type: String,
-		required: [true, 'You must enter a username.'],
-		unique: [true, 'This username is taken.']
+		required: [true, 'You must enter a username.']
 },
     displayName: String,
     age: Number,
     email:{
 		type: String,
-		required: [true, 'You must enter an email address.'],
-		unique: [true, 'This email is taken.']
-	},
-	email_verified:{
-		type: Boolean,
-		default: false
+		required: [true, 'You must enter an email address.']
 	},
     password:{
 		type: String,
