@@ -25,7 +25,7 @@ app.set('view engine', 'pug');
 app.use(express.urlencoded({ extended: true }));
 // app.use(cookieParser());
 
-
+// app.use('/createUser',require("./routes/createUser"))
 
 // Login Information
 let session = require('express-session');
@@ -155,7 +155,7 @@ app.get('/insertWeather', function (req, res){
 
 // POST routes
 app.post('/login', express.urlencoded({extended:false}), async (req, res, next)=>{
-	let untrusted= {user: req.body.userName, password: genHash(req.body.pass)};
+	let untrusted= {user: req.body.userName, password: genHash(req.body.password)};
 	console.log(untrusted.password)
 	try{
 		let result = await userCol.findOne({_id: req.body._id});
