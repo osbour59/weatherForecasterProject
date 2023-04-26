@@ -2,7 +2,7 @@
 Kyle Osbourne & Anthony Adass */
 
 /* Code inspired by https://www.npmjs.com/package/weather-js 
-Project structure and code inspired by https://github.com/profjake/lecture15 */
+Project structure and code adapted from https://github.com/profjake/lecture15 */
 
 // Weather-js Node Module used to retrieve weather information
 let weather = require('weather-js');
@@ -23,9 +23,7 @@ mongoose.set('bufferCommands', true);
 app.set('views', './views');
 app.set('view engine', 'pug');
 app.use(express.urlencoded({ extended: true }));
-// app.use(cookieParser());
 
-// app.use('/createUser',require("./routes/createUser"))
 
 // Login Information
 let session = require('express-session');
@@ -42,19 +40,19 @@ function genHash(input){
 }));
 
 // GET routes
-app.get('/', function (req, res){
+app.get('/index', function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
     }
     else{
 
-    	res.render('index', {trusted: req.session.user});
+    	res.render('/index', {trusted: req.session.user});
 	}
 
 });
 app.get('/login', function(req, res, next){
     if (req.session.user){
-        res.redirect('/');
+        res.redirect('/index');
     }else{
         res.render('login');
     }
@@ -77,7 +75,7 @@ app.get('/createUser', function(req, res){
         res.render('createUser', {trusted: req.session.user});
     }
     else{
-        res.redirect('/');
+        res.redirect('/index');
     }
 });
 
@@ -118,7 +116,7 @@ app.get('/planner', function (req, res){
 
 
 // Middleware Functions
-app.get('/', function (req, res){
+app.get('/index', function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
     }
@@ -136,7 +134,7 @@ app.use(function(req, res, next){
 
 app.get('/login', function(req, res, next){
     if (req.session.user){
-        res.redirect('/');
+        res.redirect('/index');
     }else{
         res.render('login');
     }
@@ -155,14 +153,17 @@ app.get('/insertWeather', function (req, res){
 
 // POST routes
 app.post('/login', express.urlencoded({extended:false}), async (req, res, next)=>{
-	let untrusted= {user: req.body.userName, password: genHash(req.body.password)};
+	let untrusted= {user: req.body.userName, password: genHash(req.body.pass)};
 	console.log(untrusted.password)
 	try{
-		let result = await userCol.findOne({_id: req.body._id});
+
+		let result = await userCol.findOne({_id: req.body.userName});
+
 		if (untrusted.password.toString().toUpperCase()==result.password.toString().toUpperCase()){
-			let trusted={name: result.userName.toString()};
+			let trusted={name: result._id.toString()};
             req.session.user = trusted;
-			res.redirect('/');
+			res.redirect('/index');
+            console.log("LOGIN SUCCESSFUL.");
 		} else{
 			res.redirect('/login');
 		}
@@ -177,12 +178,13 @@ Code adapted from https://soufiane-oucherrou.medium.com/user-registration-with-m
 Note: This is currently unstable, returns null when trying to login. */
 app.post('/createUser', async (req, res) => {
     try {
-        const newUser = await userCol.create({
+        const hashedPassword = genHash(req.body.password);
+        const user = await userCol.create({
             _id:req.body._id,
             displayName:req.body.displayName,
             age:req.body.age,
             email:req.body.email,
-            password:req.body.password
+            password:hashedPassword
         });
         res.send("Successfully created account.")
     }
