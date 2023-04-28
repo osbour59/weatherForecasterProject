@@ -163,10 +163,10 @@ app.post('/login', express.urlencoded({extended:false}), async (req, res, next)=
 			let trusted={name: result._id.toString()};
             req.session.user = trusted;
 			res.redirect('/');
-            console.log("LOGIN SUCCESSFUL.");
+            console.log("Successful Login Detected.");
 		} else{
 			res.redirect('/login');
-            console.log("LOGIN UNSUCCESSFUL.");	
+            console.log("Unsuccessful Login Detected.");	
 		}
 	} catch (err){
 		next(err)	
@@ -197,28 +197,28 @@ app.post('/createUser', async (req, res) => {
 
 
 // POST Request for insertWeather done by Kyle Osbourne
-app.post('/insertWeather', async (req, res) => {
+app.post('/insertWeather', function(req, res) {
     const location = req.body.location;
     const favorite = req.body.favorite;
-
-  /* This section displays the current weather for a user if a location is found
-if none is found,  a message stating that the location was not found will be displayed. */
+  
+     /* This section displays the current weather for a user if a location is found
+    if none is found,  a message stating that the location was not found will be displayed. */
     try {
     // NOTE: The API service was prone to timing out at random times.  Implemented a timeout of 15 seconds just in case it does.
     /* The weather.find function is derived from Fatih Cetinkaya's weather-js module, used to search for a location. */
-      let result = await weather.find({ search: location, degreeType: 'F' });
-      res.render('insertWeather', {
-        location: location,
-        favorite: favorite,
-        results: result,
+      weather.find({ search: location, degreeType: 'F', timeout: 15000 }, function(err, result) {
+        res.render('insertWeather', {
+          location: location,
+          favorite: favorite,
+          results: result,
+        });
       });
     } catch (err) {
       console.log(err);
-      res.render('insertWeather', { 
-        locationNotFound: true
-     });
+      res.render('insertWeather', { locationNotFound: true });
     }
   });
+  
 
 /*app.post('/addLocation', async (req, res) => {
 

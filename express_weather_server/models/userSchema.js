@@ -1,6 +1,7 @@
 let mongoose = require('mongoose');
 // userSchema.js
 // Kyle Osbourne
+// Code for subdocuments adapted from https://mongoosejs.com/docs/subdocs.html
 const userSchema = new mongoose.Schema({
     _id: {
 		type: String,
