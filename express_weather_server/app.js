@@ -46,7 +46,7 @@ app.get('/index', function (req, res){
     }
     else{
 
-    	res.render('/index', {trusted: req.session.user});
+    	res.render('index', {trusted: req.session.user});
 	}
 
 });
@@ -75,7 +75,7 @@ app.get('/createUser', function(req, res){
         res.render('createUser', {trusted: req.session.user});
     }
     else{
-        res.redirect('/index');
+        res.redirect('index');
     }
 });
 
@@ -116,7 +116,7 @@ app.get('/planner', function (req, res){
 
 
 // Middleware Functions
-app.get('/index', function (req, res){
+app.get('/', function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
     }
@@ -134,12 +134,12 @@ app.use(function(req, res, next){
 
 app.get('/login', function(req, res, next){
     if (req.session.user){
-        res.redirect('/index');
+        res.redirect('index');
     }else{
-        res.render('login');
+        res.render('/login');
     }
 });
-app.get('/insertWeather', function (req, res){
+app.get('/:_id/insertWeather', function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
     }
@@ -162,20 +162,21 @@ app.post('/login', express.urlencoded({extended:false}), async (req, res, next)=
 		if (untrusted.password.toString().toUpperCase()==result.password.toString().toUpperCase()){
 			let trusted={name: result._id.toString()};
             req.session.user = trusted;
-			res.redirect('/index');
+			res.redirect('/');
             console.log("LOGIN SUCCESSFUL.");
 		} else{
 			res.redirect('/login');
+            console.log("LOGIN UNSUCCESSFUL.");	
 		}
 	} catch (err){
-		next(err)		
+		next(err)	
+        console.log(err);
 	}
 });
 
 
 /* Post Request for createUser
-Code adapted from https://soufiane-oucherrou.medium.com/user-registration-with-mongoose-models-81f80d9933b0
-Note: This is currently unstable, returns null when trying to login. */
+Code adapted from https://soufiane-oucherrou.medium.com/user-registration-with-mongoose-models-81f80d9933b0 */
 app.post('/createUser', async (req, res) => {
     try {
         const hashedPassword = genHash(req.body.password);
@@ -197,14 +198,15 @@ app.post('/createUser', async (req, res) => {
 
 // POST Request for insertWeather done by Kyle Osbourne
 app.post('/insertWeather', async (req, res) => {
-    let location = req.body.location;
-    let favorite = req.body.favorite;
+    const location = req.body.location;
+    const favorite = req.body.favorite;
+
   /* This section displays the current weather for a user if a location is found
 if none is found,  a message stating that the location was not found will be displayed. */
     try {
     // NOTE: The API service was prone to timing out at random times.  Implemented a timeout of 15 seconds just in case it does.
     /* The weather.find function is derived from Fatih Cetinkaya's weather-js module, used to search for a location. */
-      let result = await weather.find({ search: location, degreeType: 'F', timeout: 15000 });
+      let result = await weather.find({ search: location, degreeType: 'F' });
       res.render('insertWeather', {
         location: location,
         favorite: favorite,
