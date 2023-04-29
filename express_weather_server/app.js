@@ -234,7 +234,15 @@ app.post('/addLocation', async (req, res) => {
     console.log(`${userID} Request to add location ${location}`);
     
     try {
+        /** This variable is used to check if the location is already stored into the database.
+         * If it exists, block the request, if not, let it proceed.
+         */
+        const duplicateLocation = await weatherCol.findOne({_id: `${userID}_${req.body.location}` });
+        if (duplicateLocation) {
+            res.send(`Location ${location} is already saved in your account.`);
+        } else {
         weatherAdd.find({ search: location, degreeType: 'F', timeout: 15000 }, function(err, result) {
+
             const weather = weatherCol.create({
                 /** The user's userID and result name are combined to prevent duplication issues with Mongoose.  
                  * For lookup, this will be spliced to only search under the user's ID. This
@@ -264,8 +272,8 @@ app.post('/addLocation', async (req, res) => {
           });
 
       res.send(`Successfully added location: ${location}.`);
-
-    } catch (err) {
+          
+    }} catch (err) {
       console.log(err);
       res.status(500).send("Unexpected Error!!");
     }
