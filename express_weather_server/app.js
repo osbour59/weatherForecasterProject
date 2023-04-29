@@ -4,6 +4,7 @@ Kyle Osbourne & Anthony Adass */
 /* Code inspired by https://www.npmjs.com/package/weather-js 
 Project structure and code adapted from https://github.com/profjake/lecture15 */
 
+// Weather Information
 // Weather-js Node Module used to retrieve weather information
 let weather = require('weather-js');
 
@@ -139,7 +140,7 @@ app.get('/login', function(req, res, next){
         res.render('/login');
     }
 });
-app.get('/:_id/insertWeather', function (req, res){
+app.get('/insertWeather', function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
     }
@@ -197,7 +198,7 @@ app.post('/createUser', async (req, res) => {
 
 
 // POST Request for insertWeather done by Kyle Osbourne
-app.post('/insertWeather', function(req, res) {
+app.post('/insertWeather', function(req, res,next) {
     const location = req.body.location;
     const favorite = req.body.favorite;
   
@@ -210,19 +211,36 @@ app.post('/insertWeather', function(req, res) {
         res.render('insertWeather', {
           location: location,
           favorite: favorite,
-          results: result,
+          results: result
         });
       });
     } catch (err) {
       console.log(err);
-      res.render('insertWeather', { locationNotFound: true });
+      res.render('insertWeather', {err});
     }
   });
+
   
 
-/*app.post('/addLocation', async (req, res) => {
+/* This is where the location is actually added into the database.
+The location variable is passed through the /insertWeather post request using the Pug form request.
+The user id (username), is pulled from the session information.
+This is needed to add the information into the database. */
+app.post('/addLocation', async (req, res) => {
+    const userID = req.session.user.name;
+    const location = req.body.location;
+    /* The add request is sent to console. */
+    console.log(`${userID} Request to add location ${req.body.location}`);
 
-}); */
+    /* Add the weather location to the database. */
+
+   /** const weather = await weatherCol.create({
+        _id:userID,
+        
+
+    }); */
+
+});
 
  /* Starts the ExpressJS server on Port 6900 */
 app.listen(6900, async ()=> {

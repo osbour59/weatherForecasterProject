@@ -31,7 +31,8 @@ block content
       p Humidity: #{current.humidity}%
       p Wind Speed: #{current.windspeed}
 
-    form(method="POST" action="/insertWeather")
+    form(method="POST" action="/addLocation")
+      input(type="hidden" name="location" value=location)
       p Do you want to add this location to your account?
 
       if favorite
