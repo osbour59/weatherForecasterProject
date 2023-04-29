@@ -4,6 +4,9 @@ Kyle Osbourne & Anthony Adass */
 /* Code inspired by https://www.npmjs.com/package/weather-js 
 Project structure and code adapted from https://github.com/profjake/lecture15 */
 
+// Weather-js Node Module used to retrieve weather information
+let weather = require('weather-js');
+
 let http = require('http');
 let qString = require('querystring');
 
@@ -21,8 +24,6 @@ app.set('views', './views');
 app.set('view engine', 'pug');
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/insertWeather', require("./routes/insertWather"));
-
 
 // Login Information
 let session = require('express-session');
@@ -32,7 +33,6 @@ function genHash(input){
     return Buffer.from(crypto.createHash('sha256').update(input).digest('base32')).toString('hex').toUpperCase();
 }
 
-
   app.use(session({
     secret: "terceS",
     saveUninitialized: false,
@@ -40,7 +40,7 @@ function genHash(input){
 }));
 
 // GET routes
-app.get('/', function (req, res){
+app.get('/index', function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
     }
@@ -58,6 +58,17 @@ app.get('/login', function(req, res, next){
     }
 });
 
+// Render the insert Weather Page, redirect to login if the user is not logged in
+app.get('/insertWeather', function (req, res){
+	if (!req.session.user){
+        res.redirect('/login');
+    }
+    else{
+
+    	res.render('insertWeather', {trusted: req.session.user});
+	}
+});
+
 // Render the Sign-up Page
 app.get('/createUser', function(req, res){
     if(!req.session.user){
@@ -68,6 +79,10 @@ app.get('/createUser', function(req, res){
     }
 });
 
+// GET Request for insertWeather done by Kyle Osbourne
+app.get('/insertWeather', function(req, res) {
+	res.render('insertWeather');
+  });
 
   app.get('/savedLocations', function (req, res){
 	if (!req.session.user){
@@ -106,6 +121,7 @@ app.get('/', function (req, res){
         res.redirect('/login');
     }
     else{
+
     	res.render('index', {trusted: req.session.user});
 	}
 
@@ -123,14 +139,16 @@ app.get('/login', function(req, res, next){
         res.render('/login');
     }
 });
-
-app.get('/addLocation', function(req, res, next){
-    if (req.session.user){
-        res.redirect('index');
-    }else{
-        res.render('/addLocation');
+app.get('/:_id/insertWeather', function (req, res){
+	if (!req.session.user){
+        res.redirect('/login');
     }
+    else{
+
+    	res.render('insertWeather', {trusted: req.session.user});
+	}
 });
+
 
 
 // POST routes
@@ -140,8 +158,7 @@ app.post('/login', express.urlencoded({extended:false}), async (req, res, next)=
 	try{
 
 		let result = await userCol.findOne({_id: req.body.userName});
-        /* The result of the login attempt is sent to console.  If successful, it returns
-        succesful, and vice versa. */
+
 		if (untrusted.password.toString().toUpperCase()==result.password.toString().toUpperCase()){
 			let trusted={name: result._id.toString()};
             req.session.user = trusted;
@@ -158,7 +175,7 @@ app.post('/login', express.urlencoded({extended:false}), async (req, res, next)=
 });
 
 
-/* Post Request for createUser by Kyle Osbourne & Anthony Adass
+/* Post Request for createUser
 Code adapted from https://soufiane-oucherrou.medium.com/user-registration-with-mongoose-models-81f80d9933b0 */
 app.post('/createUser', async (req, res) => {
     try {
@@ -169,8 +186,6 @@ app.post('/createUser', async (req, res) => {
             age:req.body.age,
             email:req.body.email,
             password:hashedPassword
-            /* When creating an account, the password needs to be hashed to allow for proper validation
-            when logging in. */
         });
         res.send("Successfully created account.")
     }
@@ -179,27 +194,35 @@ app.post('/createUser', async (req, res) => {
         console.log(e.message);
     }
 });
-  
-/* This is where the location is actually added into the database.
-The location variable is passed through the /insertWeather post request using the Pug form request.
-The user id (username), is pulled from the session information.
-This is needed to add the information into the database. */
-app.post('/addLocation', async (req, res) => {
-    const userID = req.session.user.name;
+
+
+// POST Request for insertWeather done by Kyle Osbourne
+app.post('/insertWeather', function(req, res) {
     const location = req.body.location;
-    /* The add request is sent to console. */
-    console.log(`${userID} Request to add location ${req.body.location}`);
+    const favorite = req.body.favorite;
+  
+     /* This section displays the current weather for a user if a location is found
+    if none is found,  a message stating that the location was not found will be displayed. */
+    try {
+    // NOTE: The API service was prone to timing out at random times.  Implemented a timeout of 15 seconds just in case it does.
+    /* The weather.find function is derived from Fatih Cetinkaya's weather-js module, used to search for a location. */
+      weather.find({ search: location, degreeType: 'F', timeout: 15000 }, function(err, result) {
+        res.render('insertWeather', {
+          location: location,
+          favorite: favorite,
+          results: result,
+        });
+      });
+    } catch (err) {
+      console.log(err);
+      res.render('insertWeather', { locationNotFound: true });
+    }
+  });
+  
 
-    console.log('${current.observationtime}');
-    /* Add the weather location to the database. */
+/*app.post('/addLocation', async (req, res) => {
 
-   /** const weather = await weatherCol.create({
-        _id:userID,
-        
-
-    }); */
-
-});
+}); */
 
  /* Starts the ExpressJS server on Port 6900 */
 app.listen(6900, async ()=> {
