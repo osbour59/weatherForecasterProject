@@ -6,7 +6,9 @@ Project structure and code adapted from https://github.com/profjake/lecture15 */
 
 // Weather Information
 // Weather-js Node Module used to retrieve weather information
-let weather = require('weather-js');
+const weatherFind = require('weather-js');
+const weatherAdd = require('weather-js');
+const weatherCol = require('./models/weatherSchema.js');
 
 let http = require('http');
 let qString = require('querystring');
@@ -207,7 +209,7 @@ app.post('/insertWeather', function(req, res,next) {
     try {
     // NOTE: The API service was prone to timing out at random times.  Implemented a timeout of 15 seconds just in case it does.
     /* The weather.find function is derived from Fatih Cetinkaya's weather-js module, used to search for a location. */
-      weather.find({ search: location, degreeType: 'F', timeout: 15000 }, function(err, result) {
+      weatherFind.find({ search: location, degreeType: 'F', timeout: 15000 }, function(err, result) {
         res.render('insertWeather', {
           location: location,
           favorite: favorite,
@@ -221,7 +223,7 @@ app.post('/insertWeather', function(req, res,next) {
   });
 
   
-
+/** Add Location POST request done by Kyle Osbourne */
 /* This is where the location is actually added into the database.
 The location variable is passed through the /insertWeather post request using the Pug form request.
 The user id (username), is pulled from the session information.
@@ -229,18 +231,47 @@ This is needed to add the information into the database. */
 app.post('/addLocation', async (req, res) => {
     const userID = req.session.user.name;
     const location = req.body.location;
-    /* The add request is sent to console. */
-    console.log(`${userID} Request to add location ${req.body.location}`);
+    console.log(`${userID} Request to add location ${location}`);
+    
+    try {
+        weatherAdd.find({ search: location, degreeType: 'F', timeout: 15000 }, function(err, result) {
+            const weather = weatherCol.create({
+                /** The user's userID and result name are combined to prevent duplication issues with Mongoose.  
+                 * For lookup, this will be spliced to only search under the user's ID. This
+                 * will also allow for the user to have their personalized locations when they login.
+                 * The way the variables are spliced allows saved locations to be looked up with REGEX 
+                 * and the userID.
+                 * Documentation: https://www.mongodb.com/docs/manual/reference/operator/query/regex/
+                */
+                _id: `${userID}_${req.body.location}`,
+                location: {
+                  name: result[0].location.name,
+                  latitude: result[0].location.lat,
+                  longitude: result[0].location.long,
+                  timezone: result[0].location.timezone,
+                  degreeType: result[0].location.degreetype
+                },
+                forecast: result[0].forecast.map(forecast => ({
+                  lowTemperature: forecast.low,
+                  highTemperature: forecast.high,
+                  skyCode: forecast.skycodeday,
+                  skyText: forecast.skytextday,
+                  date: forecast.date,
+                  day: forecast.shortday,
+                  precipitation: forecast.precip
+                }))
+              });
+          });
 
-    /* Add the weather location to the database. */
+      res.send(`Successfully added location: ${location}.`);
 
-   /** const weather = await weatherCol.create({
-        _id:userID,
-        
+    } catch (err) {
+      console.log(err);
+      res.status(500).send("Unexpected Error!!");
+    }
+  });
+  
 
-    }); */
-
-});
 
  /* Starts the ExpressJS server on Port 6900 */
 app.listen(6900, async ()=> {

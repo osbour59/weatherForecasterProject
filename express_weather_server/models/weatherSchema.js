@@ -12,18 +12,6 @@ const weatherSchema = new mongoose.Schema( {
       timezone: String,
       degreeType: String
     },
-    current: {
-      temperature: Number,
-      skyCode: String,
-      skyText: String,
-      observationTime: Date,
-      observationPoint: String,
-      feelsLikeTemperature: Number,
-      humidity: Number,
-      windDisplay: String,
-      day: String,
-      windSpeed: Number
-    },
     forecast: [
       {
         lowTemperature: Number,
