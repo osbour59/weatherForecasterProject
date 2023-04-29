@@ -1,3 +1,9 @@
 extends layout
+
 block content
-     h2 My Locations
+  h2 My Locations
+  form(action='/savedLocations', method='POST')
+    select(name='location')
+      each location in locations
+        option(value=location._id) #{location.location.name}
+    button(type='submit') Show Weather

@@ -1,3 +1,7 @@
+body {
+    background-color: #edf5ef;
+  }
+
 h1 {
     color: goldenrod;
 }
@@ -6,6 +10,7 @@ h2 {
     color: darkslategrey;
 }
 
-backdrop {
-    color: lightcyan;
+div {
+    color: darkblue;
+    border: 1px solid black;
 }

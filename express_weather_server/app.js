@@ -82,20 +82,42 @@ app.get('/createUser', function(req, res){
     }
 });
 
-// GET Request for insertWeather done by Kyle Osbourne
-app.get('/insertWeather', function(req, res) {
-	res.render('insertWeather');
-  });
-
-  app.get('/savedLocations', function (req, res){
+  app.get('/savedLocations', async function(req, res){
 	if (!req.session.user){
         res.redirect('/login');
     }
-    else{
-
-    	res.render('savedLocations', {trusted: req.session.user});
-	}
+    else {
+    try {
+      const userID = req.session.user.name;
+      /** For lookup with the query, the userID is specificed using regex so only their saved locations show up.
+        * Documentation: https://www.mongodb.com/docs/manual/reference/operator/query/regex/
+        * This is also mentioned in the post request for addLocation.
+        */
+      const savedLocations = await weatherCol.find({ _id: { $regex: `^${userID}_` } });
+      res.render('savedLocations', {trusted: req.session.user, locations: savedLocations});
+    } catch (err) {
+      console.log(err);
+      res.status(404).send("Unexpected Error!!");
+    }
+  }
 });
+
+/** POST request for savedLocations done by Kyle Osbourne
+ * This is used to display information relating to what location the user selected in the dropdown menu.
+ */
+app.post('/savedLocations', async (req, res) => {
+    const userID = req.session.user.name;
+    const locationID = req.body.location;
+    console.log(`${userID} Request for weather at location at ID ${locationID}`);
+  
+    try {
+      const weather = await weatherCol.findById(locationID);
+      res.render('forecast', {weather});
+    } catch (err) {
+      console.log(err);
+      res.status(500).send("Unexpected Error!!");
+    }
+  });
 
 app.get('/settings', function (req, res){
 	if (!req.session.user){
@@ -178,11 +200,14 @@ app.post('/login', express.urlencoded({extended:false}), async (req, res, next)=
 });
 
 
-/* Post Request for createUser
+/* Post Request for createUser done by Kyle Osbourne & Anthony Adass
 Code adapted from https://soufiane-oucherrou.medium.com/user-registration-with-mongoose-models-81f80d9933b0 */
 app.post('/createUser', async (req, res) => {
     try {
         const hashedPassword = genHash(req.body.password);
+        /** The password is hashed before being stored into the database to 
+         * ensure it's stored in a secure manner, also for validation at login.
+         */
         const user = await userCol.create({
             _id:req.body._id,
             displayName:req.body.displayName,
@@ -190,7 +215,7 @@ app.post('/createUser', async (req, res) => {
             email:req.body.email,
             password:hashedPassword
         });
-        res.send("Successfully created account.")
+        res.send("Successfully created account. <br><a href='/login'>Login</a>.")
     }
     catch(e) {
         res.status(404).send(e.message)
@@ -239,7 +264,8 @@ app.post('/addLocation', async (req, res) => {
          */
         const duplicateLocation = await weatherCol.findOne({_id: `${userID}_${req.body.location}` });
         if (duplicateLocation) {
-            res.send(`Location ${location} is already saved in your account.`);
+            res.send(`Location ${location} is already saved in your account.<br><a href='/insertWeather'>Insert a different location</a>` +
+            ` or <br><a href='/'>Return to the homepage.</a>`);
         } else {
         weatherAdd.find({ search: location, degreeType: 'F', timeout: 15000 }, function(err, result) {
 
@@ -259,6 +285,11 @@ app.post('/addLocation', async (req, res) => {
                   timezone: result[0].location.timezone,
                   degreeType: result[0].location.degreetype
                 },
+                /** The map function was used to populate the data model
+                 * with the needed forecast for 5 days.
+                 * Sources: https://www.w3schools.com/jsref/jsref_map.asp
+                 * Modern JavaScript for the Impatient - Chapter 3
+                 */
                 forecast: result[0].forecast.map(forecast => ({
                   lowTemperature: forecast.low,
                   highTemperature: forecast.high,
@@ -271,7 +302,8 @@ app.post('/addLocation', async (req, res) => {
               });
           });
 
-      res.send(`Successfully added location: ${location}.`);
+      res.send(`Successfully added location: ${location}. <br><a href='/insertWeather'>Insert a different location</a>` +
+      ` or <br><a href='/'>Return to the homepage.</a>`);
           
     }} catch (err) {
       console.log(err);

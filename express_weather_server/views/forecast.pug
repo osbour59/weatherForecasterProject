@@ -1,0 +1,12 @@
+extends layout
+block content
+  h2 Weather Forecast for #{weather.location.name}
+  each forecast in weather.forecast
+    div
+      p Date: #{forecast.date}
+      p Day: #{forecast.day}
+      p Low Temperature: #{forecast.lowTemperature} °F
+      p High Temperature: #{forecast.highTemperature} °F
+      p Sky Code: #{forecast.skyCode}
+      p Sky Text: #{forecast.skyText}
+      p Precipitation: #{forecast.precipitation}%
