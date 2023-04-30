@@ -3,6 +3,7 @@ const router = express.Router();
 const weatherFind = require('weather-js');
 const weatherAdd = require('weather-js');
 const weatherCol = require('../models/weatherSchema.js');
+const userCol = require('../models/userSchema.js');
 let dbManager = require('../dbManager');
 const http = require('http');
 const mongoose = require('mongoose');
@@ -81,6 +82,7 @@ router.post('/addLocation', async (req, res) => {
          */
         const duplicateLocation = await weatherCol.findOne({_id: `${userID}_${req.body.location}` });
         if (duplicateLocation) {
+          console.log(`${userID} Request to add location ${location} BLOCKED.`);
             res.send(`Location ${location} is already saved in your account.<br><a href='/insertWeather'>Insert a different location</a>` +
             ` or <br><a href='/'>Return to the homepage.</a>`);
         } else {
@@ -117,6 +119,10 @@ router.post('/addLocation', async (req, res) => {
                   precipitation: forecast.precip
                 }))
               });
+              /** If the user has a favorite location, it's added to the User subdocument here. */
+              if (res.body.favorite) {
+
+              }
           });
 
       res.send(`Successfully added location: ${location}. <br><a href='/insertWeather'>Insert a different location</a>` +
