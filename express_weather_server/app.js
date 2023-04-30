@@ -23,14 +23,13 @@ app.use(express.urlencoded({ extended: true }));
 
 
 // Login Information
+let session = require('express-session');
 
-
-/*
 let crypto = require('crypto');
 function genHash(input){
     return Buffer.from(crypto.createHash('sha256').update(input).digest('base32')).toString('hex').toUpperCase();
 }
-*/
+
 const userCol = require('./models/userSchema.js');
   app.use(session({
     secret: "terceS",
