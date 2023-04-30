@@ -318,7 +318,7 @@ app.post('/addLocation', async (req, res) => {
         if (err) {
           res.status(400).send('Unable to log out')
         } else {
-          res.send('Logout successful')
+          res.send(`Logout successful <br><a href='/login'>Return to the Login Page.</a>`)
         }
       });
     } else {
