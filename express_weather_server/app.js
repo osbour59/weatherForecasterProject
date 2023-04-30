@@ -310,6 +310,12 @@ app.post('/addLocation', async (req, res) => {
       res.status(500).send("Unexpected Error!!");
     }
   });
+
+  //Logs the user out of the program
+  app.get('/logout', function (req, res) {
+    req.session.destroy();
+    res.send(`Logged out. <br><a href='/login'>Log back in`);
+  });
   
 
 
