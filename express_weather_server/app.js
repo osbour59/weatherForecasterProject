@@ -23,13 +23,15 @@ app.use(express.urlencoded({ extended: true }));
 
 
 // Login Information
-let session = require('express-session');
+
+
+/*
 let crypto = require('crypto');
-const userCol = require('./models/userSchema.js');
 function genHash(input){
     return Buffer.from(crypto.createHash('sha256').update(input).digest('base32')).toString('hex').toUpperCase();
 }
-
+*/
+const userCol = require('./models/userSchema.js');
   app.use(session({
     secret: "terceS",
     saveUninitialized: false,
@@ -38,7 +40,9 @@ function genHash(input){
 
 /** Declare necessary routes for the app. */
 const weatherRoutes = require('./routes/weatherRoutes.js');
+const loginRoutes = require('./routes/loginRoutes.js')
 app.use('/', weatherRoutes);
+app.use('/', loginRoutes);
 
 // GET routes
 app.get('/index', function (req, res){
@@ -50,13 +54,6 @@ app.get('/index', function (req, res){
     	res.render('index', {trusted: req.session.user});
 	}
 
-});
-app.get('/login', function(req, res, next){
-    if (req.session.user){
-        res.redirect('/index');
-    }else{
-        res.render('login');
-    }
 });
 
 // Render the Sign-up Page
@@ -106,37 +103,7 @@ app.use(function(req, res, next){
     console.log(`${req.method} Request to ${req.path} Route Received: ${now}`);
     next();
 });
-
-app.get('/login', function(req, res, next){
-    if (req.session.user){
-        res.redirect('index');
-    }else{
-        res.render('/login');
-    }
-});
-
 // POST routes
-app.post('/login', express.urlencoded({extended:false}), async (req, res, next)=>{
-	let untrusted= {user: req.body.userName, password: genHash(req.body.pass)};
-	console.log(untrusted.password)
-	try{
-
-		let result = await userCol.findOne({_id: req.body.userName});
-
-		if (untrusted.password.toString().toUpperCase()==result.password.toString().toUpperCase()){
-			let trusted={name: result._id.toString()};
-            req.session.user = trusted;
-			res.redirect('/');
-            console.log("Successful Login Detected.");
-		} else{
-			res.redirect('/login');
-            console.log("Unsuccessful Login Detected.");	
-		}
-	} catch (err){
-		next(err)	
-        console.log(err);
-	}
-});
 
 
 /* Post Request for createUser done by Kyle Osbourne & Anthony Adass
@@ -161,23 +128,6 @@ app.post('/createUser', async (req, res) => {
         console.log(e.message);
     }
 });
-
-
-  //Logs the user out of the program, Anthony Adass
-  app.get('/logout', (req, res) => {
-    if (req.session) {
-      req.session.destroy(err => {
-        if (err) {
-          res.status(400).send('Unable to log out')
-        } else {
-          res.send(`Logout successful <br><a href='/login'>Return to the Login Page.</a>`)
-        }
-      });
-    } else {
-      res.end()
-    }
-  })
-
 
  /* Starts the ExpressJS server on Port 6900 */
 app.listen(6900, async ()=> {
