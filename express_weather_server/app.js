@@ -128,6 +128,54 @@ app.post('/createUser', async (req, res) => {
     }
 });
 
+app.post('/changeEmail', async(req,res)=>{
+    try{
+        const newEmail = req.body.email;
+        const userID = req.session.user.name;
+        await userCol.findByIdAndUpdate(userID, {email: newEmail});
+        res.send("Email Address Updated.")
+    }catch(e){
+        res.status(404).send(e.message);
+        console.log(e.message);
+    }
+});
+
+app.post('/changeAge', async(req,res)=>{
+    try{
+        const newAge= req.body.age;
+        const userID= req.session.user.name;
+        await userCol.findByIdAndUpdate(userID, {age: newAge});
+        res.send("Age Updated.")
+    }catch(e){
+        res.status(404).send(e.message);
+        console.log(e.message);
+    }
+});
+
+app.post('/changeDisplayName', async(req,res)=> {
+    try{
+        const newName= req.body.displayName;
+        const userID= req.session.user.name;
+        await userCol.findByIdAndUpdate(userID, {displayName: newName});
+        res.send("Display Name Updated.")
+    }catch(e) {
+        res.status(404).send(e.message);
+        console.log(e.message);
+    }
+});
+
+app.post('/changePassword', async(req,res)=>{
+    try{
+        const newPass = genHash(req.body.password);
+        const userID= req.session.user.name;
+        await userCol.findByIdAndUpdate(userID, {password: newPass});
+        res.send("Password Updated.")
+    }catch(e){
+        res.status(404).send(e.message);
+        console.log(e.message);
+    }
+});
+
  /* Starts the ExpressJS server on Port 6900 */
 app.listen(6900, async ()=> {
     try{
