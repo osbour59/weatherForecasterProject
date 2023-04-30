@@ -312,7 +312,7 @@ app.post('/addLocation', async (req, res) => {
   });
 
   //Logs the user out of the program
-  app.delete('/logout', (req, res) => {
+  app.get('/logout', (req, res) => {
     if (req.session) {
       req.session.destroy(err => {
         if (err) {
