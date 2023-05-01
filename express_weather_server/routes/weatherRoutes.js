@@ -1,3 +1,10 @@
+/** weatherRoutes.js
+ * Kyle Osbourne
+ * Purpose: This routing file handles all weather related router requests, including seeking locations and parsing
+ * data into the database.  This file requires the weather-js dependency from Node Package Manager
+ * Code adapted from https://github.com/ProfJake/APWJS_Final_Lab/
+ * Weather related code adapted and inspired from https://www.npmjs.com/package/weather-js
+ */
 const express = require('express');
 const router = express.Router();
 const weatherFind = require('weather-js');
@@ -86,9 +93,9 @@ router.post('/addLocation', async (req, res) => {
             res.send(`Location ${location} is already saved in your account.<br><a href='/insertWeather'>Insert a different location</a>` +
             ` or <br><a href='/'>Return to the homepage.</a>`);
         } else {
-        weatherAdd.find({ search: location, degreeType: 'F', timeout: 15000 }, function(err, result) {
+        weatherAdd.find({ search: location, degreeType: 'F', timeout: 15000 }, async function(err, result) {
 
-            const weather = weatherCol.create({
+            const weather = await weatherCol.create({
                 /** The user's userID and result name are combined to prevent duplication issues with Mongoose.  
                  * For lookup, this will be spliced to only search under the user's ID. This
                  * will also allow for the user to have their personalized locations when they login.
@@ -119,7 +126,6 @@ router.post('/addLocation', async (req, res) => {
                   precipitation: forecast.precip
                 }))
               });
-              /** If the user has a favorite location, it's added to the User subdocument here. */
 
           });
 
