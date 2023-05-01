@@ -10,3 +10,7 @@ block content
       p Sky Code: #{forecast.skyCode}
       p Genral Overview: #{forecast.skyText}
       p Chance of Precipitation: #{forecast.precipitation}%
+  form(action='/deleteLocation', method='POST')
+   input(type="hidden" name="location" value=weather.location.name)
+   button(type='submit') Delete Location
+  br

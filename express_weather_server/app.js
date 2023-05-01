@@ -31,6 +31,7 @@ function genHash(input){
 }
 
 const userCol = require('./models/userSchema.js');
+const plannerCol = require('./models/plannerSchema.js');
   app.use(session({
     secret: "terceS",
     saveUninitialized: false,
@@ -85,6 +86,17 @@ app.get('/planner', function (req, res){
 	}
 });
 
+app.post('/updatePlanner', async (req, res) => {
+    try {
+        const userID = req.session.name;
+        plannerID = userID + '_planner';
+        const updatePlanner = await plannerCol.findByIdAndUpdate(plannerID, {entry: req.body});
+        res.send("Planner Updated.");
+    } catch(e) {
+
+    }
+
+});
 
 // Middleware Functions
 app.get('/', function (req, res){
@@ -120,10 +132,14 @@ app.post('/createUser', async (req, res) => {
             email:req.body.email,
             password:hashedPassword
         });
+
+        const planner = await plannerCol.create({
+            _id: `${req.body._id}_planner`
+        });
         res.send("Successfully created account. <br><a href='/login'>Login</a>.")
     }
     catch(e) {
-        res.status(404).send(e.message)
+        res.status(404).send(e.message);
         console.log(e.message);
     }
 });

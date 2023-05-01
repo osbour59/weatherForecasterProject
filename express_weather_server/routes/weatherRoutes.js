@@ -120,9 +120,7 @@ router.post('/addLocation', async (req, res) => {
                 }))
               });
               /** If the user has a favorite location, it's added to the User subdocument here. */
-              if (res.body.favorite) {
 
-              }
           });
 
       res.send(`Successfully added location: ${location}. <br><a href='/insertWeather'>Insert a different location</a>` +
@@ -151,6 +149,25 @@ router.post('/savedLocations', async (req, res) => {
     }
   });
   
+  /** POST Request to Delete a location done by Kyle Osbourne
+   * The user and location IDs are formed, and a query
+   * to find the specific location to the user is performed
+   * to delete the location from their page.
+   */
+  router.post('/deleteLocation', async (req, res) => {
+    try {
+      const userID = req.session.user.name;
+      const location = req.body.location
+      const locationID = userID + "_" + location;
+      console.log(`${userID} Request to DELETE location ID ${locationID}`);
+      await weatherCol.findByIdAndDelete(locationID);
+      res.send(`Location deleted successfully <br><a href='/insertWeather'>Insert a different location</a>` +
+      ` or <br><a href='/'>Return to the homepage.</a>`);
+    } catch (e) {
+      res.status(500).send(e.message);
+    }
+  });  
+
   module.exports = router;
   
   
