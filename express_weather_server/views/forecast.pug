@@ -8,5 +8,9 @@ block content
       p Low Temperature: #{forecast.lowTemperature} °F
       p High Temperature: #{forecast.highTemperature} °F
       p Sky Code: #{forecast.skyCode}
-      p Genral Overview: #{forecast.skyText}
+      p General Overview: #{forecast.skyText}
       p Chance of Precipitation: #{forecast.precipitation}%
+  form(action='/deleteLocation', method='POST')
+   input(type="hidden" name="location" value=weather.location.name)
+   button(type='submit') Delete Location
+  br

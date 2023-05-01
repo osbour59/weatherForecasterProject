@@ -23,15 +23,15 @@ app.use(express.urlencoded({ extended: true }));
 
 
 // Login Information
+let session = require('express-session');
 
-
-/*
 let crypto = require('crypto');
 function genHash(input){
     return Buffer.from(crypto.createHash('sha256').update(input).digest('base32')).toString('hex').toUpperCase();
 }
-*/
+
 const userCol = require('./models/userSchema.js');
+const plannerCol = require('./models/plannerSchema.js');
   app.use(session({
     secret: "terceS",
     saveUninitialized: false,
@@ -86,6 +86,17 @@ app.get('/planner', function (req, res){
 	}
 });
 
+app.post('/updatePlanner', async (req, res) => {
+    try {
+        const userID = req.session.name;
+        plannerID = userID + '_planner';
+        const updatePlanner = await plannerCol.findByIdAndUpdate(plannerID, {entry: req.body});
+        res.send("Planner Updated.");
+    } catch(e) {
+
+    }
+
+});
 
 // Middleware Functions
 app.get('/', function (req, res){
@@ -121,10 +132,62 @@ app.post('/createUser', async (req, res) => {
             email:req.body.email,
             password:hashedPassword
         });
+
+        const planner = await plannerCol.create({
+            _id: `${req.body._id}_planner`
+        });
         res.send("Successfully created account. <br><a href='/login'>Login</a>.")
     }
     catch(e) {
-        res.status(404).send(e.message)
+        res.status(404).send(e.message);
+        console.log(e.message);
+    }
+});
+
+app.post('/changeEmail', async(req,res)=>{
+    try{
+        const newEmail = req.body.email;
+        const userID = req.session.user.name;
+        await userCol.findByIdAndUpdate(userID, {email: newEmail});
+        res.send("Email Address Updated.")
+    }catch(e){
+        res.status(404).send(e.message);
+        console.log(e.message);
+    }
+});
+
+app.post('/changeAge', async(req,res)=>{
+    try{
+        const newAge= req.body.age;
+        const userID= req.session.user.name;
+        await userCol.findByIdAndUpdate(userID, {age: newAge});
+        res.send("Age Updated.")
+    }catch(e){
+        res.status(404).send(e.message);
+        console.log(e.message);
+    }
+});
+
+app.post('/changeDisplayName', async(req,res)=> {
+    try{
+        const newName= req.body.displayName;
+        const userID= req.session.user.name;
+        await userCol.findByIdAndUpdate(userID, {displayName: newName});
+        res.send("Display Name Updated.")
+    }catch(e) {
+        res.status(404).send(e.message);
+        console.log(e.message);
+    }
+});
+
+app.post('/changePassword', async(req,res)=>{
+    try{
+        const newPass = genHash(req.body.password);
+        const userID= req.session.user.name;
+        await userCol.findByIdAndUpdate(userID, {password: newPass});
+        res.send("Password Updated.")
+    }catch(e){
+        res.status(404).send(e.message);
         console.log(e.message);
     }
 });

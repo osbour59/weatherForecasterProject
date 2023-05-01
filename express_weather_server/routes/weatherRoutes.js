@@ -1,8 +1,16 @@
+/** weatherRoutes.js
+ * Kyle Osbourne
+ * Purpose: This routing file handles all weather related router requests, including seeking locations and parsing
+ * data into the database.  This file requires the weather-js dependency from Node Package Manager
+ * Code adapted from https://github.com/ProfJake/APWJS_Final_Lab/
+ * Weather related code adapted and inspired from https://www.npmjs.com/package/weather-js
+ */
 const express = require('express');
 const router = express.Router();
 const weatherFind = require('weather-js');
 const weatherAdd = require('weather-js');
 const weatherCol = require('../models/weatherSchema.js');
+const userCol = require('../models/userSchema.js');
 let dbManager = require('../dbManager');
 const http = require('http');
 const mongoose = require('mongoose');
@@ -81,12 +89,13 @@ router.post('/addLocation', async (req, res) => {
          */
         const duplicateLocation = await weatherCol.findOne({_id: `${userID}_${req.body.location}` });
         if (duplicateLocation) {
+          console.log(`${userID} Request to add location ${location} BLOCKED.`);
             res.send(`Location ${location} is already saved in your account.<br><a href='/insertWeather'>Insert a different location</a>` +
             ` or <br><a href='/'>Return to the homepage.</a>`);
         } else {
-        weatherAdd.find({ search: location, degreeType: 'F', timeout: 15000 }, function(err, result) {
+        weatherAdd.find({ search: location, degreeType: 'F', timeout: 15000 }, async function(err, result) {
 
-            const weather = weatherCol.create({
+            const weather = await weatherCol.create({
                 /** The user's userID and result name are combined to prevent duplication issues with Mongoose.  
                  * For lookup, this will be spliced to only search under the user's ID. This
                  * will also allow for the user to have their personalized locations when they login.
@@ -117,6 +126,7 @@ router.post('/addLocation', async (req, res) => {
                   precipitation: forecast.precip
                 }))
               });
+
           });
 
       res.send(`Successfully added location: ${location}. <br><a href='/insertWeather'>Insert a different location</a>` +
@@ -145,6 +155,25 @@ router.post('/savedLocations', async (req, res) => {
     }
   });
   
+  /** POST Request to Delete a location done by Kyle Osbourne
+   * The user and location IDs are formed, and a query
+   * to find the specific location to the user is performed
+   * to delete the location from their page.
+   */
+  router.post('/deleteLocation', async (req, res) => {
+    try {
+      const userID = req.session.user.name;
+      const location = req.body.location
+      const locationID = userID + "_" + location;
+      console.log(`${userID} Request to DELETE location ID ${locationID}`);
+      await weatherCol.findByIdAndDelete(locationID);
+      res.send(`Location deleted successfully <br><a href='/insertWeather'>Insert a different location</a>` +
+      ` or <br><a href='/'>Return to the homepage.</a>`);
+    } catch (e) {
+      res.status(500).send(e.message);
+    }
+  });  
+
   module.exports = router;
   
   

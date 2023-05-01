@@ -1,3 +1,7 @@
 extends layout
 block content
      h2 Planner
+     form(action='/updatePlanner', method='POST')
+          textarea(name="plannerText" rows="10" cols="50")
+          br
+          button(type='submit') Update Planner
