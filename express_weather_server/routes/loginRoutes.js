@@ -1,3 +1,4 @@
+//Route page by Anthony Adass
 const express = require('express');
 const router = express.Router();
 let dbManager = require('../dbManager');
@@ -9,7 +10,7 @@ const userCol = require('../models/userSchema');
 function genHash(input){
     return Buffer.from(crypto.createHash('sha256').update(input).digest('base32')).toString('hex').toUpperCase();
 }
-//GET Requests by Anthony Adass
+//GET Requests 
 router.get('/login', function(req, res, next){
     if (req.session.user){
         res.redirect('/index');
@@ -18,6 +19,7 @@ router.get('/login', function(req, res, next){
     }
 });
 
+//Post Requests
 router.post('/login', express.urlencoded({extended:false}), async (req, res, next)=>{
 	let untrusted= {user: req.body.userName, password: genHash(req.body.pass)};
 	console.log(untrusted.password)
@@ -40,6 +42,7 @@ router.post('/login', express.urlencoded({extended:false}), async (req, res, nex
 	}
 });
 
+//Logs out the user
 router.get('/logout', (req, res) => {
     if (req.session) {
       req.session.destroy(err => {
