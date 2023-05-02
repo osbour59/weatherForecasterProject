@@ -81,6 +81,7 @@ This is needed to add the information into the database. */
 router.post('/addLocation', async (req, res) => {
     const userID = req.session.user.name;
     const location = req.body.location;
+    const isFavorite = req.body.favorite;
     console.log(`${userID} Request to add location ${location}`);
     
     try {
@@ -108,8 +109,7 @@ router.post('/addLocation', async (req, res) => {
                   name: result[0].location.name,
                   latitude: result[0].location.lat,
                   longitude: result[0].location.long,
-                  timezone: result[0].location.timezone,
-                  degreeType: result[0].location.degreetype
+                  timezone: result[0].location.timezone
                 },
                 /** The map function was used to populate the data model
                  * with the needed forecast for 5 days.
@@ -122,11 +122,27 @@ router.post('/addLocation', async (req, res) => {
                   skyCode: forecast.skycodeday,
                   skyText: forecast.skytextday,
                   date: forecast.date,
-                  day: forecast.shortday,
+                  day: forecast.day,
                   precipitation: forecast.precip
                 }))
               });
 
+              /** If the favorite checkbox was selected, add this location to the user's favorites subdocument. 
+               * This is done by pushing the item into the array.
+               * https://stackoverflow.com/questions/33049707/push-items-into-mongo-array-via-mongoose
+              */
+              if (isFavorite) {
+                console.log(`${userID} Request to favorite location ${location}.`);
+                const setFavoriteLocation = {
+                  region: result[0].location.name,
+                  latitude: result[0].location.lat,
+                  longitude: result[0].location.long
+                };
+                await userCol.findByIdAndUpdate(userID, { $push: { favoriteLocations: setFavoriteLocation } });
+              } else {
+                /** If the location is not a favorite, add it normally. */
+                console.log(`${userID} Request to add location ${location} is not a favorite.`);
+              }
           });
 
       res.send(`Successfully added location: ${location}. <br><a href='/insertWeather'>Insert a different location</a>` +

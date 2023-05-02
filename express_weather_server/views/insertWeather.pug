@@ -9,7 +9,7 @@ block content
     br
 
     | Favorite?
-    input(type="checkbox" name="favorite")
+    input(type="checkbox" name="favorite" value=favorite)
 
     p
       input(type="submit" value="Get Location")
@@ -27,17 +27,19 @@ block content
       p Current Time: #{current.observationtime}
       p Temperature: #{current.temperature}°F
       p Feels Like: #{current.feelslike}°F
-      p Skytext: #{current.skytext}
+      p General Overview: #{current.skytext}
+      img(src=current.imageUrl, alt=current.skytext)
       p Humidity: #{current.humidity}%
       p Wind Speed: #{current.windspeed}
 
     form(method="POST" action="/addLocation")
       input(type="hidden" name="location" value=location)
+      input(type="hidden" name="favorite" value=favorite)
       p Do you want to add this location to your account?
 
       if favorite
         p This will be added to your favorites.
 
       input(type="submit" value="Yes")
-      input(type="reset" value="No")
+      input(type="reset" value="No" onclick="location.reload()")
     // Kyle Osbourne

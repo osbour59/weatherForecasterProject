@@ -45,13 +45,20 @@ app.use('/', weatherRoutes);
 app.use('/', loginRoutes);
 
 // GET routes
-app.get('/index', function (req, res){
+app.get('/index', async function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
     }
     else{
+        const userID = req.session.user.name;
+        try {
+    		const user = await userCol.findById(userID);
+            const displayName = user.displayName;
+			const favoriteLocations = user.favoriteLocations;
+			res.render('index', {trusted: req.session.user, favoriteLocations, displayName});
+    	} catch(e) {
 
-    	res.render('index', {trusted: req.session.user});
+        }
 	}
 
 });
@@ -99,13 +106,20 @@ app.post('/updatePlanner', async (req, res) => {
 });
 
 // Middleware Functions
-app.get('/', function (req, res){
+app.get('/', async function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
     }
     else{
+        const userID = req.session.user.name;
+        try {
+    		const user = await userCol.findById(userID);
+            const displayName = user.displayName;
+			const favoriteLocations = user.favoriteLocations;
+			res.render('index', {trusted: req.session.user, favoriteLocations, displayName});
+    	} catch(e) {
 
-    	res.render('index', {trusted: req.session.user});
+        }
 	}
 
 });

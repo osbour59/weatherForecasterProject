@@ -18,7 +18,6 @@ const weatherSchema = new mongoose.Schema( {
         highTemperature: Number,
         skyCode: String,
         skyText: String,
-        date: Date,
         day: String,
         precipitation: Number
       }

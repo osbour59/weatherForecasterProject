@@ -1,8 +1,10 @@
 extends layout
 block content
-     body 
-      h2 Homepage
-      br
-     h2 At a Glance
-          h3 Favorite Locations
-          h3 Planner Entry
+  body 
+    h2 Welcome, #{displayName}
+    h2 At a Glance
+      h3 Favorite Locations
+      ul
+        each location in favoriteLocations
+          li= location.region
+      h3 Planner Entry
