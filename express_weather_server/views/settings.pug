@@ -1,28 +1,38 @@
 extends layout
 block content
      h2 Settings for User #{trusted.name}
+          h3
           form(method = "POST", action='/changeDisplayName')
-               | Display name: 
+               | Display Name: 
                input(type="text", name="displayName")
-               br
                input(type="submit", value="Change Display Name")
+               br
+               br
           
           form(method="POST", action='/changeEmail')
                | Email: 
                input(type="email", name="email")
-               br
                input(type="submit", value="Change Email")
+               br
+               br
 
           form(method="POST", action='/changePassword')
                | Password: 
                input(type="password", name="password")
-               br
                input(type="submit", value="Change Password")
+               br
+               br
           
           form(method="POST", action='/changeAge')
                | Age: 
                input(type="number", name="age")
-               br
                input(type="submit", value="Change Age")
-          
+               br
+               br
+
+          form(method="POST", action='/toggleDarkMode')
+               input(type="checkbox", name="darkMode", checked=darkMode)
+               label(for="darkMode") Dark Mode
+               input(type="submit", value="Save")
+               br
           //Brian Young

@@ -1,0 +1,16 @@
+body {
+    background-color: black;
+  }
+
+h1 {
+    color: goldenrod;
+}
+
+h2 {
+    color: darkslategrey;
+}
+
+div {
+    color: darkblue;
+    border: 1px solid black;
+}
