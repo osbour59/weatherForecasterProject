@@ -43,9 +43,9 @@ router.post('/createUser', async (req, res) => {
             email:req.body.email,
             password:hashedPassword
         });
-
         const planner = await plannerCol.create({
-            _id: `${req.body._id}_planner`
+            _id: `${req.body._id}_planner`,
+            entry: ""
         });
         res.send("Successfully created account. <br><a href='/login'>Login</a>.")
     }

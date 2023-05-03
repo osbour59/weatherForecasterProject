@@ -19,11 +19,15 @@ router.get('/planner', async function (req, res){
     else{
         const userID = req.session.user.name;
         try {
+            /** The planner ID is formed so the planner entry field can be accessed immediately
+             * This is so the user can update their planner AND is used for the Pug file to
+             * auto-fill the planner with what they've already put.
+             */
             const user = await userCol.findById(userID);
+            const plannerID = userID + '_planner';
+            const planner = await plannerCol.findById(plannerID);
             const darkMode = user.preferences.darkMode;
-            res.render('planner', {trusted: req.session.user, darkMode});
-            const plannerEntries = await plannerCol.find();
-            console.log(plannerEntries);
+            res.render('planner', {trusted: req.session.user, darkMode, entry: planner.entry});
         } catch(e) {
             console.log(e.message);
         }

@@ -31,7 +31,13 @@ const userCol = require('./models/userSchema.js');
     resave: false
 }));
 
-/** Declare necessary routes for the app. */
+/** The planner collection is called here because it needs
+ * to be accessed so the user's current planner can display
+ * on the index.
+ */
+const plannerCol = require('./models/plannerSchema.js');
+
+/** Declare necessary routes for the app to function properly. */
 const weatherRoutes = require('./routes/weatherRoutes.js');
 const loginRoutes = require('./routes/loginRoutes.js');
 const settingsRoutes = require('./routes/settingsRoutes.js');
@@ -42,6 +48,8 @@ app.use('/', loginRoutes);
 app.use('/', settingsRoutes);
 app.use('/', plannerRoutes);
 app.use('/', createUserRoutes);
+
+
 // GET routes
 app.get('/index', async function (req, res){
 	if (!req.session.user){
@@ -50,12 +58,22 @@ app.get('/index', async function (req, res){
     else{
         const userID = req.session.user.name;
         try {
+            /** Retrieve the userID to pass to the index page
+             * to display the user's display name, favorite
+             * locations, and whether or not to load
+             * dark mode.
+             */
     		const user = await userCol.findById(userID);
             const displayName = user.displayName;
 			const favoriteLocations = user.favoriteLocations;
             const darkMode = user.preferences.darkMode;
+            /** Retrieve the plannerID to pass to the index page to
+             * display the entry to the user.
+             */
             const plannerID = userID + "_planner";
-			res.render('index', {trusted: req.session.user, favoriteLocations, displayName, darkMode});
+            const planner = await plannerCol.findById(plannerID);
+            const entry = planner.entry;
+			res.render('index', {trusted: req.session.user, favoriteLocations, displayName, entry, darkMode});
     	} catch(e) {
             console.log(e.message);
         }
@@ -76,19 +94,31 @@ app.get('/', async function (req, res){
         res.redirect('/login');
     }
     else{
-        const userID = req.session.user.name;
         try {
+            /** Retrieve the userID to pass to the index page
+             * to display the user's display name, favorite
+             * locations, and whether or not to load
+             * dark mode.
+             */
     		const user = await userCol.findById(userID);
             const displayName = user.displayName;
 			const favoriteLocations = user.favoriteLocations;
             const darkMode = user.preferences.darkMode;
-			res.render('index', {trusted: req.session.user, favoriteLocations, displayName, darkMode});
+            /** Retrieve the plannerID to pass to the index page to
+             * display the entry to the user.
+             */
+            const plannerID = userID + "_planner";
+            const planner = await plannerCol.findById(plannerID);
+            const entry = planner.entry;
+			res.render('index', {trusted: req.session.user, favoriteLocations, displayName, entry, darkMode});
     	} catch(e) {
-
+            console.log(e.message);
         }
 	}
 
 });
+
+
 app.use(function(req, res, next){
     let now = new Date().toLocaleTimeString("en-US", {timeZone: "America/New_York"});
     console.log(`${req.method} Request to ${req.path} Route Received: ${now}`);
