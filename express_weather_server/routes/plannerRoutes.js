@@ -1,5 +1,7 @@
 /** 
  * plannerRoutes.js
+ * Kyle Osbourne
+ * Purpose: This file handles all routing requests related to the planner.
  * */
 const express = require('express');
 const router = express.Router();
@@ -20,6 +22,8 @@ router.get('/planner', async function (req, res){
             const user = await userCol.findById(userID);
             const darkMode = user.preferences.darkMode;
             res.render('planner', {trusted: req.session.user, darkMode});
+            const plannerEntries = await plannerCol.find();
+            console.log(plannerEntries);
         } catch(e) {
             console.log(e.message);
         }
@@ -29,14 +33,15 @@ router.get('/planner', async function (req, res){
 // POST Routes
 router.post('/updatePlanner', async (req, res) => {
     try {
-        const userID = req.session.name;
-        plannerID = userID + '_planner';
-        const updatePlanner = await plannerCol.findByIdAndUpdate(plannerID, {entry: req.body});
-        res.send("Planner Updated.");
+        const userID = req.session.user.name;
+        const plannerID = userID + '_planner';
+        await plannerCol.findByIdAndUpdate(plannerID, {entry: req.body.entry});
+        res.send("Planner updated.");
     } catch(e) {
-
+        console.log(e);
+        res.send("Error updating planner.");
     }
-
 });
+
 
 module.exports = router;

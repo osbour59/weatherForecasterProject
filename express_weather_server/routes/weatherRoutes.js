@@ -59,21 +59,32 @@ router.get('/savedLocations', async function(req, res){
 
 /** POST Requests */
 // POST Request for insertWeather done by Kyle Osbourne
-router.post('/insertWeather', function(req, res,next) {
+router.post('/insertWeather', function(req, res) {
     const location = req.body.location;
     const favorite = req.body.favorite;
-  
+    const darkMode = req.body.darkMode;
      /* This section displays the current weather for a user if a location is found
     if none is found,  a message stating that the location was not found will be displayed. */
     try {
     // NOTE: The API service was prone to timing out at random times.  Implemented a timeout of 15 seconds just in case it does.
     /* The weather.find function is derived from Fatih Cetinkaya's weather-js module, used to search for a location. */
-      weatherFind.find({ search: location, degreeType: 'F', timeout: 15000 }, function(err, result) {
-        res.render('insertWeather', {
+      weatherFind.find({ search: location, degreeType: 'F', timeout: 15000 }, async function(err, result) {
+        /** If an error occurs, no result is found, or if the length of the result is zero (Basically no result found)
+         * Declare locationNotFound true and block the request.
+         */
+        if (err || !result || result.length === 0) {
+          res.render('insertWeather', {
+            locationNotFound: true,
+            darkMode: darkMode,  
+          });
+          console.log(`Request to add invalid location BLOCKED.`);
+        } else {        
+          res.render('insertWeather', {
           location: location,
           favorite: favorite,
-          results: result
-        });
+          results: result,
+          darkMode: darkMode
+        });}
       });
     } catch (err) {
       console.log(err);
@@ -102,9 +113,16 @@ router.post('/addLocation', async (req, res) => {
             res.send(`Location ${location} is already saved in your account.<br><a href='/insertWeather'>Insert a different location</a>` +
             ` or <br><a href='/'>Return to the homepage.</a>`);
         } else {
-        weatherAdd.find({ search: location, degreeType: 'F', timeout: 15000 }, async function(err, result) {
-
-            const weather = await weatherCol.create({
+          weatherAdd.find({ search: location, degreeType: 'F', timeout: 15000 }, async function(err, result) {
+          /** If an error occurs, no result is found, or if the length of the result is zero (Basically no result found)
+         * Declare locationNotFound true and block the request.
+         */
+            if (err || result.length == 0) {
+                    console.log(err);
+                    res.render('insertWeather', { locationNotFound: true });
+                    console.log(`Request to add invalid location BLOCKED.`);
+                } else {
+              const weather = await weatherCol.create({
                 /** The user's userID and result name are combined to prevent duplication issues with Mongoose.  
                  * For lookup, this will be spliced to only search under the user's ID. This
                  * will also allow for the user to have their personalized locations when they login.
@@ -134,7 +152,7 @@ router.post('/addLocation', async (req, res) => {
                   precipitation: forecast.precip
                 }))
               });
-
+          
               /** If the favorite checkbox was selected, add this location to the user's favorites subdocument. 
                * This is done by pushing the item into the array.
                * https://stackoverflow.com/questions/33049707/push-items-into-mongo-array-via-mongoose
@@ -151,8 +169,9 @@ router.post('/addLocation', async (req, res) => {
                 /** If the location is not a favorite, add it normally. */
                 console.log(`${userID} Request to add location ${location} is not a favorite.`);
               }
-          });
-
+            }
+          });          
+          
       res.send(`Successfully added location: ${location}. <br><a href='/insertWeather'>Insert a different location</a>` +
       ` or <br><a href='/'>Return to the homepage.</a>`);
           

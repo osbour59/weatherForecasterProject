@@ -54,6 +54,7 @@ app.get('/index', async function (req, res){
             const displayName = user.displayName;
 			const favoriteLocations = user.favoriteLocations;
             const darkMode = user.preferences.darkMode;
+            const plannerID = userID + "_planner";
 			res.render('index', {trusted: req.session.user, favoriteLocations, displayName, darkMode});
     	} catch(e) {
             console.log(e.message);

@@ -1,3 +1,7 @@
+/** createUserRoutes.js
+ * Code by Kyle Osbourne & Anthony Adass
+ */
+
 const express = require('express');
 const router = express.Router();
 let dbManager = require('../dbManager');
