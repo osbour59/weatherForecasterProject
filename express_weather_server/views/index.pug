@@ -2,7 +2,7 @@ extends layout
 block content
   head
     if darkMode
-     link(rel='stylesheet', href='./stylesheets/dark.css', preload)
+      link(rel='stylesheet', href='./stylesheets/dark.css', preload)
     else
       link(rel='stylesheet', href='./stylesheets/styles.css', preload)
   body 
@@ -19,4 +19,4 @@ block content
       if entry.length
         p #{entry}
       else
-        p Your planner is empty.
+        p Your planner is empty.  Once you update it in the 'My Planner' section, it will be displayed here.
