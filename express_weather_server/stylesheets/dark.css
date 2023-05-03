@@ -1,0 +1,16 @@
+body {
+  background-color: #111;
+}
+
+h1 {
+  color: #ff0;
+}
+
+h2 {
+  color: #ddd;
+}
+
+div {
+  color: #aaa;
+  border: 1px solid #444;
+}

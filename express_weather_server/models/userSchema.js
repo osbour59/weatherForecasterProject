@@ -29,7 +29,12 @@ const userSchema = new mongoose.Schema({
 		type: String,
 		required: [true, 'You must enter a password.'],
 	},
-    favoriteLocations: [favoriteLocationSchema]
+    favoriteLocations: [favoriteLocationSchema],
+    preferences: {
+        darkMode: {
+            type: Boolean, default: false 
+        }
+      }
 });
 
 
