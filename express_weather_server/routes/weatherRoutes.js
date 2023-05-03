@@ -19,13 +19,19 @@ const mongoose = require('mongoose');
 /** GET Requests */
 // GET Request for insertWeather done by Kyle Osbourne
 // Render the insert Weather Page, redirect to login if the user is not logged in
-router.get('/insertWeather', function (req, res){
+router.get('/insertWeather', async function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
     }
     else{
+      try {
+        const userID = req.session.user.name;
+        const user = await userCol.findById(userID);
+        const darkMode = user.preferences.darkMode;
+        res.render('insertWeather', {trusted: req.session.user, darkMode});
+      } catch(e) {
 
-    	res.render('insertWeather', {trusted: req.session.user});
+      }
 	}
 });
 
@@ -36,12 +42,14 @@ router.get('/savedLocations', async function(req, res){
     else {
     try {
       const userID = req.session.user.name;
+      const user = await userCol.findById(userID);
+      const darkMode = user.preferences.darkMode;
       /** For lookup with the query, the userID is specificed using regex so only their saved locations show up.
         * Documentation: https://www.mongodb.com/docs/manual/reference/operator/query/regex/
         * This is also mentioned in the post request for addLocation.
         */
       const savedLocations = await weatherCol.find({ _id: { $regex: `^${userID}_` } });
-      res.render('savedLocations', {trusted: req.session.user, locations: savedLocations});
+      res.render('savedLocations', {trusted: req.session.user, locations: savedLocations, darkMode});
     } catch (err) {
       console.log(err);
       res.status(404).send("Unexpected Error!!");

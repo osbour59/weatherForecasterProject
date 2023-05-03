@@ -1,6 +1,11 @@
 extends layout
-
 block content
+  head
+    if darkMode
+      link(rel='stylesheet', href='./stylesheets/dark.css')
+    else
+      link(rel='stylesheet', href='./stylesheets/styles.css')
+  body 
   h2 Add a New Location
 
   form(method="POST")

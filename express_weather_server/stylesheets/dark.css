@@ -3,11 +3,27 @@ body {
 }
 
 h1 {
-  color: #ff0;
+  color: white;
 }
 
 h2 {
-  color: #ddd;
+  color: lightslategray;
+}
+
+h3 {
+  color: lightgray;
+}
+
+h4 {
+  color: lightgray;
+}
+
+p {
+  color: gold;
+}
+
+li {
+  color: gold;
 }
 
 div {

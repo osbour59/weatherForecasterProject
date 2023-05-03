@@ -55,9 +55,10 @@ app.get('/index', async function (req, res){
     		const user = await userCol.findById(userID);
             const displayName = user.displayName;
 			const favoriteLocations = user.favoriteLocations;
-			res.render('index', {trusted: req.session.user, favoriteLocations, displayName});
+            const darkMode = user.preferences.darkMode;
+			res.render('index', {trusted: req.session.user, favoriteLocations, displayName, darkMode});
     	} catch(e) {
-
+            console.log(e.message);
         }
 	}
 
@@ -73,23 +74,35 @@ app.get('/createUser', function(req, res){
     }
 });
 
-app.get('/settings', function (req, res){
+app.get('/settings', async function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
     }
     else{
-
-    	res.render('settings', {trusted: req.session.user});
+        const userID = req.session.user.name;
+        try {
+            const user = await userCol.findById(userID);
+            const darkMode = user.preferences.darkMode;
+            res.render('settings', {trusted: req.session.user, darkMode});
+        } catch(e) {
+            console.log(e.message);
+        }
 	}
 });
 
-app.get('/planner', function (req, res){
+app.get('/planner', async function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
     }
     else{
-
-    	res.render('planner', {trusted: req.session.user});
+        const userID = req.session.user.name;
+        try {
+            const user = await userCol.findById(userID);
+            const darkMode = user.preferences.darkMode;
+            res.render('planner', {trusted: req.session.user, darkMode});
+        } catch(e) {
+            console.log(e.message);
+        }
 	}
 });
 
@@ -106,6 +119,14 @@ app.post('/updatePlanner', async (req, res) => {
 });
 
 // Middleware Functions
+
+/** Dark Mode Middleware by Kyle Osbourne
+ * This static express file was needed to serve the stylesheet to the user.
+ * https://stackoverflow.com/questions/48248832/stylesheet-not-loaded-because-of-mime-type
+ * https://expressjs.com/en/starter/static-files.html
+ */
+app.use('/stylesheets', express.static(__dirname + '/stylesheets'));
+
 app.get('/', async function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
@@ -116,7 +137,8 @@ app.get('/', async function (req, res){
     		const user = await userCol.findById(userID);
             const displayName = user.displayName;
 			const favoriteLocations = user.favoriteLocations;
-			res.render('index', {trusted: req.session.user, favoriteLocations, displayName});
+            const darkMode = user.preferences.darkMode;
+			res.render('index', {trusted: req.session.user, favoriteLocations, displayName, darkMode});
     	} catch(e) {
 
         }
@@ -203,6 +225,19 @@ app.post('/changePassword', async(req,res)=>{
     }catch(e){
         res.status(404).send(e.message);
         console.log(e.message);
+    }
+});
+
+app.post('/toggleDarkMode', async(req,res) =>{
+    const userID = req.session.user.name;
+    try {
+        const user = await userCol.findById(userID);
+        user.preferences.darkMode = !user.preferences.darkMode;
+        await user.save();
+        res.redirect('/');
+    } catch(e) {
+        console.log(e.message);
+        res.status(500).send('Unexpected error toggling dark mode.');
     }
 });
 
