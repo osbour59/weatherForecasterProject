@@ -2,14 +2,14 @@ extends layout
 block content
   head
     if darkMode
-      link(rel='stylesheet', href='./stylesheets/dark.css')
+     link(rel='stylesheet', href='./stylesheets/dark.css', preload)
     else
-      link(rel='stylesheet', href='./stylesheets/styles.css')
+      link(rel='stylesheet', href='./stylesheets/styles.css', preload)
   body 
      h2 Settings for User #{trusted.name}
           h3
           form(method = "POST", action='/changeDisplayName')
-               p Display Name: 
+               | Display Name: 
                input(type="text", name="displayName")
                input(type="submit", value="Change Display Name")
                br
@@ -37,7 +37,6 @@ block content
                br
 
           form(method="POST", action='/toggleDarkMode')
-               input(type="checkbox", name="darkMode", checked=darkMode)
                label(for="darkMode") Toggle Dark Mode (On/Off)
                input(type="submit", value="Save")
                br

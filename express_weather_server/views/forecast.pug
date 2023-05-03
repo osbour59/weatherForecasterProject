@@ -2,9 +2,9 @@ extends layout
 block content
   head
     if darkMode
-      link(rel='stylesheet', href='./stylesheets/dark.css')
+     link(rel='stylesheet', href='./stylesheets/dark.css', preload)
     else
-      link(rel='stylesheet', href='./stylesheets/styles.css')
+      link(rel='stylesheet', href='./stylesheets/styles.css', preload)
   body 
   h2 Weather Forecast for #{weather.location.name}
   each forecast in weather.forecast
