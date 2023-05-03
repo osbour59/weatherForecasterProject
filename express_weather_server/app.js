@@ -94,6 +94,7 @@ app.get('/', async function (req, res){
         res.redirect('/login');
     }
     else{
+        const userID = req.session.user.name;
         try {
             /** Retrieve the userID to pass to the index page
              * to display the user's display name, favorite
