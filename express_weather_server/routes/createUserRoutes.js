@@ -16,7 +16,7 @@ function genHash(input){
     return Buffer.from(crypto.createHash('sha256').update(input).digest('base32')).toString('hex').toUpperCase();
 }
 
-// GET Routes
+// GET Routes by Brian Young
 
 // Render the Sign-up Page
 router.get('/createUser', function(req, res){
