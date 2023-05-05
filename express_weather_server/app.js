@@ -2,7 +2,7 @@
  * app.js 
  * Kyle Osbourne & Anthony Adass
  * Purpose: This file handles the procedures necessary to start the server.  All the necessary
- * routes are declared here so the user can access them without needing the code here.
+ * routes and middleware are declared here so the user can access them without needing the code here.
  */
 
 /* Code inspired by https://www.npmjs.com/package/weather-js 

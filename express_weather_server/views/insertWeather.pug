@@ -38,7 +38,7 @@ block content
       p Humidity: #{current.humidity}%
       p Wind Speed: #{current.windspeed}
 
-    form(method="POST" action="/addLocation")
+    form(method="POST" action="/addLocation" autocomplete="off")
       input(type="hidden" name="location" value=location)
       input(type="hidden" name="favorite" value=favorite)
       p Do you want to add this location to your account?
@@ -47,5 +47,5 @@ block content
         p This will be added to your favorites.
 
       input(type="submit" value="Yes")
-      input(type="reset" value="No" onclick="location.reload()")
+      a.button(href="/") Return to Index
     // Kyle Osbourne
