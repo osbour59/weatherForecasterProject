@@ -47,5 +47,7 @@ block content
         p This will be added to your favorites.
 
       input(type="submit" value="Yes")
-      a.button(href="/") Return to Index
+      input(type="button" value="No" onClick="window.location.href=window.location.href")
+      // https://stackoverflow.com/questions/2405117/difference-between-window-location-href-window-location-href-and-window-location
+      // This onClick method is needed to reset the POST data on the page.
     // Kyle Osbourne
