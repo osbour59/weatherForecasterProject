@@ -37,3 +37,14 @@ crypto - Used to handle password encryption.
 
 # Additional Notes
 This program runs on MongoDB version 5.1.0.
+<br>
+Due to how CSS assets are loaded, users may experience flickering as the webpage applies the correct style.
+
+# Screenshots
+![weather_homepage](https://user-images.githubusercontent.com/129567352/236360604-24e62293-b7ed-4090-8162-ce17463fbbd6.png)
+<br>
+![weather_addlocation](https://user-images.githubusercontent.com/129567352/236360781-ff7c7041-a340-482e-b353-9736f38aac42.png)
+<br>
+![weather_darkmode](https://user-images.githubusercontent.com/129567352/236360791-4ad539a8-a45b-4ca1-8dab-76ef58521557.png)
+<br>
+![weather_forecast](https://user-images.githubusercontent.com/129567352/236360798-547269c1-d204-493f-a216-1eb7d8365df1.png)
