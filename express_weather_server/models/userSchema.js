@@ -1,7 +1,13 @@
 let mongoose = require('mongoose');
-// userSchema.js
-// Kyle Osbourne
-// Code for subdocuments adapted from https://mongoosejs.com/docs/subdocs.html
+
+/** 
+ * userSchema.js
+ * Kyle Osbourne
+ * Purpose: This schema handles user information, as well as some subproperties to a user's account
+ * such as their favorite locations or their preference for dark mode.
+ * Base user schema code adapted from https://github.com/ProfJake/APWJS_Final_Lab/
+ * Code for subdocuments adapted from https://mongoosejs.com/docs/subdocs.html
+ */
 const favoriteLocationSchema = new mongoose.Schema({
     region: {
         type: String

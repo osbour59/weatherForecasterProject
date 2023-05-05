@@ -1,5 +1,8 @@
 /** createUserRoutes.js
  * Code by Kyle Osbourne & Anthony Adass
+ * Purpose: This routing file handles all GET/POST requests necessary
+ * for creating a new user.
+ * Code adapted from https://github.com/ProfJake/APWJS_Final_Lab/
  */
 
 const express = require('express');
@@ -42,6 +45,9 @@ router.post('/createUser', async (req, res) => {
             email:req.body.email,
             password:hashedPassword
         });
+        /** The user's personal planner is also created here.  It's ID is determined
+         * by the user's username for access later.
+         */
         const planner = await plannerCol.create({
             _id: `${req.body._id}_planner`,
             entry: ""

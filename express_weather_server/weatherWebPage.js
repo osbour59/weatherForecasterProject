@@ -1,3 +1,11 @@
+/**
+ * weatherWebPage.js
+ * Kyle Osbourne 
+ * This file was used to test the weather-js npm package as well as its capabilities on a webpage.
+ * This file exists as a "concept" for the main project, carrying over the structure provided here.
+ * It displays a webpage that functions near identically to the insertWeather GET/POST requests
+ * in the actual application.
+ */
 let weather = require('weather-js');
 let http = require('http');
 let qString = require('querystring');

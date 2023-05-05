@@ -1,8 +1,13 @@
-/* File: app.js 
-Kyle Osbourne & Anthony Adass */
+/**
+ * app.js 
+ * Kyle Osbourne & Anthony Adass
+ * Purpose: This file handles the procedures necessary to start the server.  All the necessary
+ * routes are declared here so the user can access them without needing the code here.
+ */
 
 /* Code inspired by https://www.npmjs.com/package/weather-js 
-Project structure and code adapted from https://github.com/profjake/lecture15 */
+Project structure and code adapted from https://github.com/profjake/lecture15 
+and https://github.com/ProfJake/APWJS_Final_Lab/ */
 
 let http = require('http');
 let qString = require('querystring');
@@ -16,14 +21,17 @@ const ObjectId = require('mongodb').ObjectId
 const mongoose = require('mongoose');
 mongoose.set('bufferCommands', true);
 
+/** Set up the Pug templating engine. */
 app.set('views', './views');
 app.set('view engine', 'pug');
 app.use(express.urlencoded({ extended: true }));
 
 
 // Login Information
+/** This is used to establish a user's session while they're logged in.  If they are logged out, they will
+ * be unable to access most pages except for login and signup.
+ */
 let session = require('express-session');
-
 const userCol = require('./models/userSchema.js');
   app.use(session({
     secret: "terceS",
@@ -51,6 +59,10 @@ app.use('/', createUserRoutes);
 
 
 // GET routes
+
+/** Render the index page.  The user's planner
+ * is also loaded here so it displays on the page.
+ */
 app.get('/index', async function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
@@ -82,6 +94,7 @@ app.get('/index', async function (req, res){
 });
 
 // Middleware Functions
+
 /** Dark Mode Middleware by Kyle Osbourne
  * This static express file was needed to serve the stylesheet to the user.
  * https://stackoverflow.com/questions/48248832/stylesheet-not-loaded-because-of-mime-type
@@ -117,13 +130,6 @@ app.get('/', async function (req, res){
         }
 	}
 
-});
-
-
-app.use(function(req, res, next){
-    let now = new Date().toLocaleTimeString("en-US", {timeZone: "America/New_York"});
-    console.log(`${req.method} Request to ${req.path} Route Received: ${now}`);
-    next();
 });
 
  /* Starts the ExpressJS server on Port 6900 */

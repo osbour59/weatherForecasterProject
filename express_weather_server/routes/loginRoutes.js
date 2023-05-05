@@ -7,10 +7,14 @@ const mongoose = require('mongoose');
 let crypto = require('crypto');
 const userCol = require('../models/userSchema');
 
+
+/**  genHash function adapted from https://github.com/ProfJake/APWJS_Final_Lab/ */
 function genHash(input){
     return Buffer.from(crypto.createHash('sha256').update(input).digest('base32')).toString('hex').toUpperCase();
 }
-//GET Requests 
+
+
+// GET Requests 
 router.get('/login', function(req, res, next){
     if (req.session.user){
         res.redirect('/index');
@@ -19,7 +23,7 @@ router.get('/login', function(req, res, next){
     }
 });
 
-//Post Requests
+// POST Requests
 router.post('/login', express.urlencoded({extended:false}), async (req, res, next)=>{
 	let untrusted= {user: req.body.userName, password: genHash(req.body.pass)};
 	console.log(untrusted.password)

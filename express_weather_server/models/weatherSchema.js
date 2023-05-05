@@ -1,5 +1,8 @@
-/* weatherSchema.js 
-Kyle Osbourne */
+/** 
+ * weatherSchema.js
+ * Kyle Osbourne
+ * Purpose: This schema is used to handle locations that will be stored onto the database.
+ */
 
 let mongoose = require('mongoose');
 

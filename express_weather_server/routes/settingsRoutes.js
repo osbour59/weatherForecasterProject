@@ -1,5 +1,14 @@
-/** settingsRoutes.js
+/** 
+ * settingsRoutes.js
+ * 
  * Routing page by Kyle Osbourne with code from Brian Young
+ * 
+ * Code adapted from https://github.com/ProfJake/APWJS_Final_Lab/
+ * Purpose: This page handles certain settings one user can change that will
+ * reflect their account.
+ * 
+ * NOTE: The user cannot change their username, the reason for this was due
+ * to how a user's saved locations and planner entry are handled within the application.
  */
 
 const express = require('express');
@@ -16,6 +25,10 @@ function genHash(input){
 
 
 /** GET Requests */
+
+/** GET Request for the settings page.
+ * This GET request renders the settings page.
+ */
 router.get('/settings', async function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
@@ -32,6 +45,12 @@ router.get('/settings', async function (req, res){
 	}
 });
 
+/** POST Requests */
+/** changeEmail POST Request
+ * The new email address is set to the appropriate variable,
+ * the userID is accessed and then the user collection is
+ * called to find the correct ID and update the email address.
+ */
 router.post('/changeEmail', async(req,res)=>{
     try{
         const newEmail = req.body.email;
@@ -45,6 +64,11 @@ router.post('/changeEmail', async(req,res)=>{
     }
 });
 
+/** changeDisplayName POST Request
+ * The new display name is set to the appropriate variable, the user ID
+ * is accessed using the needed query to update it, and the displayName
+ * field is updated.
+ */
 router.post('/changeDisplayName', async(req,res)=> {
     try{
         const newName= req.body.displayName;
@@ -58,6 +82,11 @@ router.post('/changeDisplayName', async(req,res)=> {
     }
 });
 
+/** changePassword POST Request
+ * The new password is hashed using the genHash function.  The user ID is accessed
+ * and set as a variable, this variable is accessed and updated with the new
+ * hashed password.
+ */
 router.post('/changePassword', async(req,res)=>{
     try{
         const newPass = genHash(req.body.password);
