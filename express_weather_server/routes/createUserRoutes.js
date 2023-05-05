@@ -39,7 +39,6 @@ router.post('/createUser', async (req, res) => {
         const user = await userCol.create({
             _id:req.body._id,
             displayName:req.body.displayName,
-            age:req.body.age,
             email:req.body.email,
             password:hashedPassword
         });

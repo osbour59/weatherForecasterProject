@@ -30,3 +30,7 @@ div {
   color: #aaa;
   border: 1px solid #444;
 }
+
+label {
+  color: gold;
+}

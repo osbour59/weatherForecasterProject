@@ -9,11 +9,12 @@ block content
   h2 Add a New Location
 
   form(method="POST")
-    p Location (Region name or ZIP Code):
+    p Location (Region Name or ZIP Code):
     input(type="text" name="location")
     br
+    br
 
-    | Favorite?
+    label(for="favorite", class="label") Favorite?
     input(type="checkbox" name="favorite" value=favorite)
 
     p

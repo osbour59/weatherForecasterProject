@@ -2,6 +2,8 @@
  * plannerRoutes.js
  * Kyle Osbourne
  * Purpose: This file handles all routing requests related to the planner.
+ * The planner entry value is passed through when the page renders, this is so the value can be plugged in
+ * for the entry instead of having to type it again.
  * */
 const express = require('express');
 const router = express.Router();
@@ -12,6 +14,7 @@ const http = require('http');
 const mongoose = require('mongoose');
 
 // GET Routes
+/** GET Request to render the planner page */
 router.get('/planner', async function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
@@ -35,7 +38,7 @@ router.get('/planner', async function (req, res){
 });
 
 // POST Routes
-router.post('/updatePlanner', async (req, res) => {
+router.post('/planner', async (req, res) => {
     try {
         const userID = req.session.user.name;
         const plannerID = userID + '_planner';

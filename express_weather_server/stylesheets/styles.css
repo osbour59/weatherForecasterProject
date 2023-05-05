@@ -10,7 +10,18 @@ h2 {
     color: darkslategrey;
 }
 
+li {
+    color: rgb(183, 7, 92);
+}
+
+p {
+    color: rgb(183, 7, 92);}
+
 div {
     color: darkblue;
     border: 1px solid black;
+}
+
+label {
+    color: rgb(183, 7, 92);  
 }

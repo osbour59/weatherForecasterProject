@@ -37,19 +37,8 @@ router.post('/changeEmail', async(req,res)=>{
         const newEmail = req.body.email;
         const userID = req.session.user.name;
         await userCol.findByIdAndUpdate(userID, {email: newEmail});
-        res.send("Email Address Updated.")
-    }catch(e){
-        res.status(404).send(e.message);
-        console.log(e.message);
-    }
-});
-
-router.post('/changeAge', async(req,res)=>{
-    try{
-        const newAge= req.body.age;
-        const userID= req.session.user.name;
-        await userCol.findByIdAndUpdate(userID, {age: newAge});
-        res.send("Age Updated.")
+        res.send("Email Address Updated. <br><a href='/settings'>Return to settings</a>"+
+        ` or <br><a href='/'>Return to the homepage.</a>`);
     }catch(e){
         res.status(404).send(e.message);
         console.log(e.message);
@@ -61,7 +50,8 @@ router.post('/changeDisplayName', async(req,res)=> {
         const newName= req.body.displayName;
         const userID= req.session.user.name;
         await userCol.findByIdAndUpdate(userID, {displayName: newName});
-        res.send("Display Name Updated.")
+        res.send("Display Name Updated. <br><a href='/settings'>Return to settings</a>"+
+        ` or <br><a href='/'>Return to the homepage.</a>`);
     }catch(e) {
         res.status(404).send(e.message);
         console.log(e.message);
@@ -73,13 +63,20 @@ router.post('/changePassword', async(req,res)=>{
         const newPass = genHash(req.body.password);
         const userID= req.session.user.name;
         await userCol.findByIdAndUpdate(userID, {password: newPass});
-        res.send("Password Updated.")
+        res.send("Password Updated. <br><a href='/settings'>Return to settings</a>"+
+        ` or <br><a href='/'>Return to the homepage.</a>`);
     }catch(e){
         res.status(404).send(e.message);
         console.log(e.message);
     }
 });
 
+/** Dark Mode Toggle function done by Kyle Osbourne
+ * The dark mode preference is actually a boolean in the user's preferences
+ * subdocument.  With this post request, the boolean is accessed and changed
+ * to true or false.  With this boolean, the webpages the user accesses will
+ * check this preference and apply the appropriate CSS file.
+ */
 router.post('/toggleDarkMode', async(req,res) =>{
     const userID = req.session.user.name;
     try {

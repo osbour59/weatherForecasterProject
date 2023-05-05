@@ -9,33 +9,29 @@ block content
      h2 Settings for User #{trusted.name}
           h3
           form(method = "POST", action='/changeDisplayName')
-               | Display Name: 
+               label(for="displayName", class="label") Display Name: 
                input(type="text", name="displayName")
                input(type="submit", value="Change Display Name")
                br
                br
+               br
           
           form(method="POST", action='/changeEmail')
-               | Email: 
+               label(for="email", class="label") Email:
                input(type="email", name="email")
                input(type="submit", value="Change Email")
                br
                br
+               br
 
           form(method="POST", action='/changePassword')
-               | Password: 
+               label(for="password", class="label") Password:
                input(type="password", name="password")
                input(type="submit", value="Change Password")
                br
                br
+               br
           
-          form(method="POST", action='/changeAge')
-               | Age: 
-               input(type="number", name="age")
-               input(type="submit", value="Change Age")
-               br
-               br
-
           form(method="POST", action='/toggleDarkMode')
                label(for="darkMode") Toggle Dark Mode (On/Off)
                input(type="submit", value="Save")

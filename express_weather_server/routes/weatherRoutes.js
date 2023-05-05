@@ -18,7 +18,7 @@ const mongoose = require('mongoose');
 
 /** GET Requests */
 // GET Request for insertWeather done by Kyle Osbourne
-// Render the insert Weather Page, redirect to login if the user is not logged in
+// Render the insert Weather Page, redirect to login if the user is not logged in.
 router.get('/insertWeather', async function (req, res){
 	if (!req.session.user){
         res.redirect('/login');
@@ -35,6 +35,10 @@ router.get('/insertWeather', async function (req, res){
 	}
 });
 
+/** Render the saved locations page.  The user's saved
+ * locations from the weather collection are displayed to
+ * the user here.
+ */
 router.get('/savedLocations', async function(req, res){
 	if (!req.session.user){
         res.redirect('/login');
@@ -44,7 +48,7 @@ router.get('/savedLocations', async function(req, res){
       const userID = req.session.user.name;
       const user = await userCol.findById(userID);
       const darkMode = user.preferences.darkMode;
-      /** For lookup with the query, the userID is specificed using regex so only their saved locations show up.
+      /** For lookup with the query, the userID is specificed using regex so only THEIR saved locations show up.
         * Documentation: https://www.mongodb.com/docs/manual/reference/operator/query/regex/
         * This is also mentioned in the post request for addLocation.
         */
@@ -52,21 +56,31 @@ router.get('/savedLocations', async function(req, res){
       res.render('savedLocations', {trusted: req.session.user, locations: savedLocations, darkMode});
     } catch (err) {
       console.log(err);
-      res.status(404).send("Unexpected Error!!");
+      res.status(500).send("An unexpected error occured.");
     }
   }
 });
 
 /** POST Requests */
+
 // POST Request for insertWeather done by Kyle Osbourne
-router.post('/insertWeather', function(req, res) {
+/** This post request processes the initial search for a
+ * specific location.  The location variable is declared
+ * to receive the value from the pug file.  The favorite
+ * variable is declared to retrieve the favorite checkbox
+ * if checked.
+ */
+router.post('/insertWeather', async function(req, res) {
     const location = req.body.location;
     const favorite = req.body.favorite;
-    const darkMode = req.body.darkMode;
+    const userID = req.session.user.name;
+    const user = await userCol.findById(userID);
+    const darkMode = user.preferences.darkMode;
      /* This section displays the current weather for a user if a location is found
     if none is found,  a message stating that the location was not found will be displayed. */
     try {
-    // NOTE: The API service was prone to timing out at random times.  Implemented a timeout of 15 seconds just in case it does.
+    /** NOTE: The API service was prone to timing out at random times while developing this program. 
+     *  A timeout of 15 seconds was implemented just in case it does. */
     /* The weather.find function is derived from Fatih Cetinkaya's weather-js module, used to search for a location. */
       weatherFind.find({ search: location, degreeType: 'F', timeout: 15000 }, async function(err, result) {
         /** If an error occurs, no result is found, or if the length of the result is zero (Basically no result found)
@@ -177,7 +191,7 @@ router.post('/addLocation', async (req, res) => {
           
     }} catch (err) {
       console.log(err);
-      res.status(500).send("Unexpected Error!!");
+      res.status(500).send("An unexpected error occured.");
     }
   });
 
@@ -187,21 +201,23 @@ router.post('/addLocation', async (req, res) => {
 router.post('/savedLocations', async (req, res) => {
     const userID = req.session.user.name;
     const locationID = req.body.location;
+    const user = await userCol.findById(userID);
+    const darkMode = user.preferences.darkMode;
     console.log(`${userID} Request for weather at location ID ${locationID}`);
   
     try {
       const weather = await weatherCol.findById(locationID);
-      res.render('forecast', {weather});
+      res.render('forecast', {weather, darkMode});
     } catch (err) {
       console.log(err);
-      res.status(500).send("Unexpected Error!!");
+      res.status(500).send("An unexpected error occured.");
     }
   });
   
   /** POST Request to Delete a location done by Kyle Osbourne
    * The user and location IDs are formed, and a query
    * to find the specific location to the user is performed
-   * to delete the location from their page.
+   * to delete the location from their account (The entry in the database).
    */
   router.post('/deleteLocation', async (req, res) => {
     try {
@@ -210,7 +226,7 @@ router.post('/savedLocations', async (req, res) => {
       const locationID = userID + "_" + location;
       console.log(`${userID} Request to DELETE location ID ${locationID}`);
       await weatherCol.findByIdAndDelete(locationID);
-      res.send(`Location deleted successfully <br><a href='/insertWeather'>Insert a different location</a>` +
+      res.send(`Location deleted successfully. <br><a href='/insertWeather'>Insert a different location</a>` +
       ` or <br><a href='/'>Return to the homepage.</a>`);
     } catch (e) {
       res.status(500).send(e.message);

@@ -1,27 +1,23 @@
 extends layout_loggedOut
 block content
    body
-     h2 Sign Up
+   h2 Sign Up
+      h3
         form(method="POST")
-         | Username: 
-         |
+         label(for="displayName", class="label") Username: 
          input(name="_id")
          br
-         | Display Name: 
-         |
+         br
+         label(for="displayName", class="label") Display Name: 
          input(name="displayName")
          br
-         | Email: 
-         |
+         br
+         label(for="email", class="label") Email Address: 
          input(name="email")
          br
-         | Password: 
-         |
-         input(name="password" type="password")
          br
-         | Age: 
-         |
-         input(name="age")
+         label(for="password", class="label") Password: 
+         input(name="password" type="password")
          br
          br
          input(type = "submit" value="Sign Up")
